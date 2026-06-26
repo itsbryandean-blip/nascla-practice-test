@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASCLA Electrical — SuperClaw Practice Exam</title>
+<style>
+  :root {
+    --navy: #0f1c35;
+    --navy2: #1a2744;
+    --navy3: #243352;
+    --gold: #c9a84c;
+    --gold2: #e8c96a;
+    --white: #f0f4ff;
+    --gray: #8a9ab5;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --blue: #3498db;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--white); font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
+  .container { max-width: 860px; margin: 0 auto; padding: 20px; }
+
+  /* HEADER */
+  .header { text-align: center; padding: 30px 0 20px; border-bottom: 2px solid var(--gold); margin-bottom: 30px; }
+  .header h1 { font-size: 1.8rem; color: var(--gold); letter-spacing: 1px; }
+  .header p { color: var(--gray); font-size: 0.9rem; margin-top: 6px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 1px; }
+
+  /* SETUP SCREEN */
+  #screen-setup { display: block; }
+  .section-title { font-size: 0.75rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .card { background: var(--navy2); border: 1px solid var(--navy3); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media(max-width:600px){ .mode-grid { grid-template-columns: 1fr; } }
+  .mode-card { background: var(--navy3); border: 2px solid transparent; border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .mode-card:hover { border-color: var(--gold); }
+  .mode-card.selected { border-color: var(--gold); background: #1e2f52; }
+  .mode-card h3 { color: var(--gold); font-size: 0.95rem; margin-bottom: 6px; }
+  .mode-card p { color: var(--gray); font-size: 0.78rem; line-height: 1.5; }
+  .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(max-width:500px){ .topic-grid { grid-template-columns: 1fr; } }
+  .topic-check { display: flex; align-items: center; gap: 10px; background: var(--navy3); border-radius: 6px; padding: 10px 14px; cursor: pointer; transition: background 0.15s; }
+  .topic-check:hover { background: #2a3a5f; }
+  .topic-check input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; }
+  .topic-check label { cursor: pointer; font-size: 0.88rem; }
+  .topic-count { margin-left: auto; font-size: 0.75rem; color: var(--gold); font-weight: 700; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  select { background: var(--navy3); color: var(--white); border: 1px solid var(--navy3); border-radius: 6px; padding: 10px 14px; font-size: 0.9rem; cursor: pointer; }
+  select:focus { outline: 2px solid var(--gold); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border-radius: 8px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+  .btn-outline:hover { background: var(--gold); color: var(--navy); }
+  .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
+  .btn-gray { background: var(--navy3); color: var(--gray); border: 1px solid var(--navy3); }
+  .btn-gray:hover { border-color: var(--gray); color: var(--white); }
+  .sel-btns { display: flex; gap: 8px; margin-bottom: 12px; }
+  .start-row { text-align: center; margin-top: 24px; }
+  .q-available { color: var(--gray); font-size: 0.85rem; }
+
+  /* QUESTION SCREEN */
+  #screen-question { display: none; }
+  .q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+  .q-num { color: var(--gold); font-weight: 700; font-size: 1rem; }
+  .q-topic-label { background: var(--navy3); color: var(--gray); font-size: 0.72rem; padding: 4px 10px; border-radius: 20px; }
+  .q-timer { font-size: 0.85rem; color: var(--gray); font-family: monospace; }
+  .q-flag { font-size: 0.75rem; }
+  .progress-bar { width: 100%; height: 6px; background: var(--navy3); border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.3s; }
+  .q-text { font-size: 1.1rem; line-height: 1.7; margin-bottom: 28px; color: var(--white); }
+  .choices { display: flex; flex-direction: column; gap: 12px; }
+  .choice-btn { background: var(--navy2); border: 2px solid var(--navy3); border-radius: var(--radius); padding: 16px 20px; text-align: left; cursor: pointer; font-size: 0.95rem; color: var(--white); transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--gold); background: #1e2f52; }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { border-color: var(--green); background: rgba(46,204,113,0.12); }
+  .choice-btn.wrong { border-color: var(--red); background: rgba(231,76,60,0.12); }
+  .choice-label { width: 32px; height: 32px; border-radius: 50%; background: var(--navy3); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; color: var(--gold); }
+  .feedback-box { margin-top: 20px; padding: 18px; border-radius: var(--radius); animation: fadeIn 0.3s; }
+  .feedback-box.correct-fb { background: rgba(46,204,113,0.1); border: 1px solid var(--green); }
+  .feedback-box.wrong-fb { background: rgba(231,76,60,0.1); border: 1px solid var(--red); }
+  .fb-verdict { font-weight: 700; font-size: 1rem; margin-bottom: 10px; }
+  .fb-correct { color: var(--green); }
+  .fb-wrong { color: var(--red); }
+  .fb-explanation { color: var(--white); font-size: 0.9rem; line-height: 1.6; margin-bottom: 10px; }
+  .fb-ref { font-size: 0.82rem; color: var(--gold); background: var(--navy3); padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+  .fb-location { font-size: 0.8rem; color: var(--gray); margin-top: 6px; }
+  .lookup-timer-box { background: var(--navy3); border-radius: 8px; padding: 14px; margin-top: 12px; text-align: center; }
+  .lookup-clock { font-size: 2rem; font-family: monospace; color: var(--gold); margin: 8px 0; }
+  .q-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* RESULTS SCREEN */
+  #screen-results { display: none; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 6px solid var(--gold); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .score-pct { font-size: 2.4rem; font-weight: 700; color: var(--gold); }
+  .score-raw { font-size: 0.85rem; color: var(--gray); }
+  .verdict { text-align: center; font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; }
+  .verdict.pass { color: var(--green); }
+  .verdict.fail { color: var(--red); }
+  .topic-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .topic-table th { text-align: left; color: var(--gold); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--navy3); }
+  .topic-table td { padding: 10px 12px; border-bottom: 1px solid var(--navy3); font-size: 0.88rem; }
+  .topic-table tr:last-child td { border-bottom: none; }
+  .bar-mini { height: 6px; background: var(--navy3); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-green { background: var(--green); }
+  .bar-red { background: var(--red); }
+  .bar-yellow { background: #f39c12; }
+  .result-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; justify-content: center; }
+
+  /* REVIEW SCREEN */
+  #screen-review { display: none; }
+  .review-item { background: var(--navy2); border: 1px solid var(--navy3); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .review-item h4 { font-size: 0.72rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .review-q { font-size: 0.95rem; margin-bottom: 12px; line-height: 1.6; }
+  .review-choice { padding: 8px 12px; border-radius: 6px; font-size: 0.88rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .review-choice.rc-correct { background: rgba(46,204,113,0.15); border-left: 3px solid var(--green); }
+  .review-choice.rc-wrong { background: rgba(231,76,60,0.15); border-left: 3px solid var(--red); }
+  .review-choice.rc-neutral { opacity: 0.45; }
+  .review-exp { font-size: 0.82rem; color: var(--gray); margin-top: 10px; line-height: 1.6; }
+  .review-ref { font-size: 0.78rem; color: var(--gold); margin-top: 6px; }
+
+  /* UTILS */
+  .hidden { display: none !important; }
+  .text-center { text-align: center; }
+  .mt16 { margin-top: 16px; }
+  .mt8 { margin-top: 8px; }
+  .gold { color: var(--gold); }
+  .gray { color: var(--gray); }
+  .info-box { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: var(--gray); margin-top: 12px; line-height: 1.6; }
+  .kbd { display: inline-block; background: var(--navy3); border: 1px solid var(--gray); border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; font-family: monospace; color: var(--gray); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>⚡ NASCLA Electrical Contractors <span class="badge">SUPERCLAW</span></h1>
+    <p>PSI-Style Practice Exam · NEC 2026 · Mike Holt Tabs · Open Book Ready</p>
+  </div>
+
+  <!-- SETUP SCREEN -->
+  <div id="screen-setup">
+
+    <div class="card">
+      <div class="section-title">📋 Select Mode</div>
+      <div class="mode-grid">
+        <div class="mode-card selected" data-mode="baseline" onclick="selectMode(this)">
+          <h3>🧠 Baseline</h3>
+          <p>Answer all questions, no feedback until the end. Test raw knowledge without books.</p>
+        </div>
+        <div class="mode-card" data-mode="openbook" onclick="selectMode(this)">
+          <h3>📖 Open Book</h3>
+          <p>Immediate feedback after each answer with explanation and NEC reference.</p>
+        </div>
+        <div class="mode-card" data-mode="lookup" onclick="selectMode(this)">
+          <h3>⏱️ Lookup Training</h3>
+          <p>Open book + timed lookup tracker. Builds speed finding answers in the NEC.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📚 Select Topics</div>
+      <div class="sel-btns">
+        <button class="btn btn-sm btn-outline" onclick="selectAll(true)">Select All</button>
+        <button class="btn btn-sm btn-gray" onclick="selectAll(false)">Deselect All</button>
+      </div>
+      <div class="topic-grid" id="topic-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🔢 Question Count</div>
+      <div class="row">
+        <select id="q-count">
+          <option value="10">10 Questions</option>
+          <option value="20">20 Questions</option>
+          <option value="30">30 Questions</option>
+          <option value="40" selected>40 Questions</option>
+          <option value="50">50 Questions</option>
+          <option value="75">75 Questions</option>
+          <option value="all">All Available</option>
+        </select>
+        <span class="q-available" id="q-available-label"></span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      💡 <strong>Keyboard shortcuts during exam:</strong> Press <span class="kbd">A</span> <span class="kbd">B</span> <span class="kbd">C</span> <span class="kbd">D</span> to answer · <span class="kbd">F</span> to flag · <span class="kbd">Enter</span> or <span class="kbd">Space</span> for next question
+    </div>
+
+    <div class="start-row mt16">
+      <button class="btn btn-gold" onclick="startExam()" style="font-size:1.1rem; padding:16px 48px;">▶ Start Exam</button>
+    </div>
+
+  </div><!-- /setup -->
+
+  <!-- QUESTION SCREEN -->
+  <div id="screen-question">
+    <div class="q-meta">
+      <div class="q-num" id="q-num-label">Question 1 of 40</div>
+      <div class="q-topic-label" id="q-topic-label"></div>
+      <div class="q-timer" id="q-timer">0:00</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="card">
+      <div class="q-text" id="q-text"></div>
+      <div class="choices" id="choices"></div>
+      <div id="feedback" class="hidden"></div>
+      <div id="lookup-timer-box" class="lookup-timer-box hidden">
+        <div style="font-size:0.82rem;color:var(--gray);">📖 Found the answer? Start your lookup timer:</div>
+        <div class="lookup-clock" id="lookup-clock">0.0s</div>
+        <button class="btn btn-outline btn-sm" id="lookup-start-btn" onclick="startLookupTimer()">▶ Start Lookup Timer</button>
+        <button class="btn btn-gold btn-sm hidden" id="lookup-stop-btn" onclick="stopLookupTimer()">✓ Found It</button>
+      </div>
+    </div>
+    <div class="q-actions">
+      <button class="btn btn-gray btn-sm" id="flag-btn" onclick="flagQuestion()">🚩 Flag Question</button>
+      <button class="btn btn-gold hidden" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div><!-- /question -->
+
+  <!-- RESULTS SCREEN -->
+  <div id="screen-results">
+    <div class="card text-center">
+      <div class="score-circle" id="score-circle">
+        <div class="score-pct" id="score-pct"></div>
+        <div class="score-raw" id="score-raw"></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div style="color:var(--gray);font-size:0.85rem;" id="result-mode-note"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">📊 Topic Breakdown</div>
+      <table class="topic-table" id="topic-breakdown"></table>
+    </div>
+    <div id="lookup-summary-card" class="card hidden">
+      <div class="section-title">⏱️ Lookup Speed by Topic</div>
+      <table class="topic-table" id="lookup-summary"></table>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-gold" onclick="showReview()">📋 Review Wrong Answers</button>
+      <button class="btn btn-outline" onclick="retakeSame()">🔁 Retake Same Questions</button>
+      <button class="btn btn-gray" onclick="newTest()">🏠 New Test</button>
+    </div>
+  </div><!-- /results -->
+
+  <!-- REVIEW SCREEN -->
+  <div id="screen-review">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button class="btn btn-gray btn-sm" onclick="backToResults()">← Back to Results</button>
+      <h2 style="color:var(--gold);font-size:1.1rem;">Wrong Answers Review</h2>
+    </div>
+    <div id="review-list"></div>
+    <div class="text-center mt16">
+      <button class="btn btn-gray" onclick="backToResults()">← Back to Results</button>
+    </div>
+  </div><!-- /review -->
+
+</div><!-- /container -->
+
+<script>
+// =============================================
+// QUESTION BANK
+// =============================================
+const QUESTIONS = [
+  // ── GROUNDING & BONDING (Art. 250) ──────────────────────────────────────
+  {id:1,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"What is the minimum size copper equipment grounding conductor (EGC) required for a circuit protected by a 60-ampere overcurrent device?",
+   choices:["8 AWG","10 AWG","12 AWG","6 AWG"],
+   answerIndex:1,
+   explanation:"NEC Table 250.122 lists EGC sizing based on the OCPD rating. For a 60A OCPD, the minimum copper EGC is 10 AWG.",
+   bookRef:"NEC 2026 Table 250.122",
+   bookLocation:"NEC 2026 → Mike Holt Tab: Art. 250 → scroll to Table 250.122 (near end of Art. 250)"},
+
+  {id:2,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"The main bonding jumper connecting the neutral to the equipment ground in the service panel shall be sized per:",
+   choices:["NEC 310.12","NEC 250.28","NEC 250.102","NEC 250.24"],
+   answerIndex:2,
+   explanation:"NEC 250.102(C) and Table 250.102(C)(1) govern sizing of the main bonding jumper based on the service conductor size.",
+   bookRef:"NEC 2026 Table 250.102(C)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Table 250.102(C)(1)"},
+
+  {id:3,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"The grounding electrode conductor (GEC) for a 200-amp service using copper conductors must be at minimum:",
+   choices:["2 AWG copper","4 AWG copper","6 AWG copper","1/0 AWG copper"],
+   answerIndex:1,
+   explanation:"NEC Table 250.66 — for a 200A service typically using 2/0 AWG service conductors, the minimum GEC is 4 AWG copper.",
+   bookRef:"NEC 2026 Table 250.66",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Table 250.66"},
+
+  {id:4,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"Which of the following is NOT an acceptable grounding electrode per NEC 250.52?",
+   choices:["Metal water pipe with 10 ft buried in earth","Concrete-encased electrode (rebar)","Plastic water pipe buried in earth","Ground ring of bare copper wire"],
+   answerIndex:2,
+   explanation:"A plastic water pipe is not conductive and therefore cannot serve as a grounding electrode. NEC 250.52 lists acceptable electrodes — all must be conductive.",
+   bookRef:"NEC 2026 250.52",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Section 250.52"},
+
+  {id:5,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"Where a metal water pipe is used as a grounding electrode, what is the minimum burial length required?",
+   choices:["5 feet","8 feet","10 feet","15 feet"],
+   answerIndex:2,
+   explanation:"NEC 250.52(A)(1) requires the metal water pipe to have at least 10 feet in contact with the earth.",
+   bookRef:"NEC 2026 250.52(A)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Section 250.52(A)(1)"},
+
+  {id:6,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"An equipment bonding jumper on the supply side of service shall be sized using:",
+   choices:["Table 310.12","Table 250.122","Table 250.102(C)(1)","Table 310.15(B)(1)"],
+   answerIndex:2,
+   explanation:"NEC 250.102(C) requires supply-side bonding jumpers to be sized from Table 250.102(C)(1) based on the size of the service conductors.",
+   bookRef:"NEC 2026 250.102(C)",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → 250.102(C)"},
+
+  {id:7,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"The main bonding jumper must be installed at which location?",
+   choices:["At the first overcurrent device after the meter","At the service disconnecting means","At the grounding electrode","Anywhere within the service panel"],
+   answerIndex:1,
+   explanation:"NEC 250.28(A) requires the main bonding jumper to be installed at the service disconnecting means.",
+   bookRef:"NEC 2026 250.28(A)",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Section 250.28(A)"},
+
+  {id:8,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"What is the minimum size EGC for a circuit protected by a 200-ampere overcurrent device?",
+   choices:["4 AWG","6 AWG","8 AWG","2 AWG"],
+   answerIndex:1,
+   explanation:"NEC Table 250.122 — for a 200A OCPD, the minimum copper EGC is 6 AWG.",
+   bookRef:"NEC 2026 Table 250.122",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Table 250.122"},
+
+  // ── BRANCH CIRCUITS & LOAD CALCS (Art. 210/220) ─────────────────────────
+  {id:9,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"A 20-ampere branch circuit supplies a single outlet. What is the maximum cord-and-plug connected load permitted?",
+   choices:["16 amperes","20 amperes","12 amperes","15 amperes"],
+   answerIndex:0,
+   explanation:"NEC 210.21(B)(2) — a single outlet on a 20A circuit must be rated 20A, and the max load is 80% of the circuit rating = 16A.",
+   bookRef:"NEC 2026 210.21(B)(2)",
+   bookLocation:"NEC 2026 → Tab: Art. 210 → Section 210.21(B)"},
+
+  {id:10,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"GFCI protection is required for all 125-volt, 15- and 20-ampere receptacles in which of the following dwelling unit locations?",
+   choices:["Attics only","Crawl spaces only","Bathrooms and garage areas","Living rooms only"],
+   answerIndex:2,
+   explanation:"NEC 210.8(A) lists required GFCI locations in dwelling units, including bathrooms, garages, outdoors, crawl spaces, unfinished basements, kitchens, and more.",
+   bookRef:"NEC 2026 210.8(A)",
+   bookLocation:"NEC 2026 → Tab: Art. 210 → Section 210.8(A)"},
+
+  {id:11,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"The standard load for each small appliance branch circuit in a dwelling unit is:",
+   choices:["1,000 VA","1,200 VA","1,500 VA","2,000 VA"],
+   answerIndex:2,
+   explanation:"NEC 220.52(A) — each small appliance branch circuit is calculated at 1,500 VA.",
+   bookRef:"NEC 2026 220.52(A)",
+   bookLocation:"NEC 2026 → Tab: Art. 220 → Section 220.52(A)"},
+
+  {id:12,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"What is the minimum number of small appliance branch circuits required for a dwelling unit kitchen?",
+   choices:["1","2","3","4"],
+   answerIndex:1,
+   explanation:"NEC 210.11(C)(1) requires a minimum of two 20A small appliance branch circuits in the kitchen.",
+   bookRef:"NEC 2026 210.11(C)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 210 → Section 210.11(C)(1)"},
+
+  {id:13,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"A 15-ampere, 125-volt receptacle in a dwelling unit bathroom MUST be:",
+   choices:["On a dedicated circuit only","GFCI protected only","AFCI protected only","On a dedicated circuit AND GFCI protected"],
+   answerIndex:3,
+   explanation:"NEC 210.8(A)(1) requires GFCI protection; NEC 210.11(C)(3) requires the circuit to be dedicated to bathroom receptacles.",
+   bookRef:"NEC 2026 210.8(A)(1) and 210.11(C)(3)",
+   bookLocation:"NEC 2026 → Tab: Art. 210 → Sections 210.8 and 210.11"},
+
+  {id:14,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"An overcurrent protective device shall NOT be located in which of the following?",
+   choices:["At the point of service entrance","In the bathroom of a dwelling unit","In a hallway panelboard","In a garage panelboard"],
+   answerIndex:1,
+   explanation:"NEC 240.24(E) prohibits OCPDs from being located in bathrooms of dwelling units.",
+   bookRef:"NEC 2026 240.24(E)",
+   bookLocation:"NEC 2026 → Tab: Art. 240 → Section 240.24(E)"},
+
+  {id:15,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"When sizing a feeder for a commercial occupancy, the demand factor for general lighting loads is found in:",
+   choices:["Table 220.42","Table 220.55","Table 310.12","Table 220.12"],
+   answerIndex:0,
+   explanation:"NEC Table 220.42 provides lighting load demand factors for various occupancy types used in feeder/service load calculations.",
+   bookRef:"NEC 2026 Table 220.42",
+   bookLocation:"NEC 2026 → Tab: Art. 220 → Table 220.42"},
+
+  {id:16,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"The general lighting load for a dwelling unit is calculated at what VA per square foot?",
+   choices:["2 VA/sq ft","3 VA/sq ft","3.5 VA/sq ft","4 VA/sq ft"],
+   answerIndex:1,
+   explanation:"NEC 220.12 and Table 220.12 — dwelling units use 3 VA/sq ft for general lighting load calculation.",
+   bookRef:"NEC 2026 Table 220.12",
+   bookLocation:"NEC 2026 → Tab: Art. 220 → Table 220.12"},
+
+  // ── CONDUCTORS & WIRING METHODS ──────────────────────────────────────────
+  {id:17,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"What is the ampacity of a 12 AWG copper THWN conductor in a conduit with 3 current-carrying conductors at a 75°C termination rating?",
+   choices:["20 amperes","25 amperes","30 amperes","15 amperes"],
+   answerIndex:0,
+   explanation:"NEC Table 310.16 (2026) — 12 AWG THWN copper at 75°C = 20A with ≤3 conductors (no adjustment factor needed).",
+   bookRef:"NEC 2026 Table 310.16",
+   bookLocation:"NEC 2026 → Mike Holt Tab: Art. 310 → Table 310.16"},
+
+  {id:18,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"When more than 3 current-carrying conductors are in a raceway, the adjustment factor for 4 to 6 conductors is:",
+   choices:["80%","70%","50%","60%"],
+   answerIndex:0,
+   explanation:"NEC Table 310.15(C)(1) — for 4-6 current-carrying conductors in a raceway, apply an 80% adjustment factor to the table ampacity.",
+   bookRef:"NEC 2026 Table 310.15(C)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 310 → Table 310.15(C)(1)"},
+
+  {id:19,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"The minimum burial depth for rigid metal conduit (RMC) under a residential driveway is:",
+   choices:["6 inches","12 inches","18 inches","24 inches"],
+   answerIndex:1,
+   explanation:"NEC Table 300.5 — RMC under residential driveways requires a minimum 12-inch burial depth.",
+   bookRef:"NEC 2026 Table 300.5",
+   bookLocation:"NEC 2026 → Tab: Art. 300 → Table 300.5"},
+
+  {id:20,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"The maximum total degrees of bends permitted in a conduit run between pull points is:",
+   choices:["180°","270°","360°","450°"],
+   answerIndex:2,
+   explanation:"NEC 358.26 (EMT) and 344.26 (RMC) — maximum 360° total bends between pull/junction boxes.",
+   bookRef:"NEC 2026 358.26 / 344.26",
+   bookLocation:"NEC 2026 → Tab: Art. 358 or Art. 344 → Section .26"},
+
+  {id:21,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"For 3 or more conductors in a raceway, the maximum conduit fill percentage is:",
+   choices:["31%","40%","53%","25%"],
+   answerIndex:1,
+   explanation:"NEC Chapter 9 Table 1 — for more than 2 wires in a conduit, maximum fill is 40%.",
+   bookRef:"NEC 2026 Chapter 9 Table 1",
+   bookLocation:"NEC 2026 → Back of book: Chapter 9 Tables → Table 1"},
+
+  {id:22,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"The minimum length of free conductor required at each outlet, junction, or switch point is:",
+   choices:["4 inches","6 inches","8 inches","12 inches"],
+   answerIndex:1,
+   explanation:"NEC 300.14 — at least 6 inches of free conductor must be available at each outlet or switch point.",
+   bookRef:"NEC 2026 300.14",
+   bookLocation:"NEC 2026 → Tab: Art. 300 → Section 300.14"},
+
+  {id:23,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"Type NM cable (Romex) shall NOT be used in which of the following?",
+   choices:["Wood-framed residential building","Commercial building over 3 stories","Residential garage","Residential attic"],
+   answerIndex:1,
+   explanation:"NEC 334.10 and 334.12 limit NM cable use. It is not permitted in commercial, industrial, or buildings over 3 floors above grade.",
+   bookRef:"NEC 2026 334.10 and 334.12",
+   bookLocation:"NEC 2026 → Tab: Art. 334 → Sections 334.10 and 334.12"},
+
+  {id:24,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"The maximum number of 12 AWG THHN conductors permitted in a 3/4-inch EMT conduit is:",
+   choices:["9","13","16","20"],
+   answerIndex:2,
+   explanation:"NEC Annex C Table C.1 — 3/4\" EMT with 12 AWG THHN conductors: maximum 16 conductors.",
+   bookRef:"NEC 2026 Annex C Table C.1",
+   bookLocation:"NEC 2026 → Back of book: Annex C → Table C.1 (EMT column, 12 AWG THHN row)"},
+
+  // ── MOTORS (Art. 430) ────────────────────────────────────────────────────
+  {id:25,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"The branch circuit conductors for a single motor shall have an ampacity of not less than what percentage of the motor's full-load current (FLC)?",
+   choices:["100%","115%","125%","150%"],
+   answerIndex:2,
+   explanation:"NEC 430.22 — branch circuit conductors for a single motor must be sized at 125% of the motor's FLC.",
+   bookRef:"NEC 2026 430.22",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Section 430.22"},
+
+  {id:26,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"What is the full-load current (FLC) for a 3-phase, 460-volt, 10-HP motor?",
+   choices:["10 amperes","14 amperes","11 amperes","27 amperes"],
+   answerIndex:1,
+   explanation:"NEC Table 430.250 — 10HP, 460V, 3-phase motor FLC = 14A.",
+   bookRef:"NEC 2026 Table 430.250",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Table 430.250 (3-phase motors)"},
+
+  {id:27,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"The maximum overload protection for a motor with a service factor of 1.15 is what percentage of motor FLC?",
+   choices:["115%","125%","140%","150%"],
+   answerIndex:2,
+   explanation:"NEC 430.32(A)(1) — for motors with a service factor of 1.15 or greater, max overload protection = 140% of FLC.",
+   bookRef:"NEC 2026 430.32(A)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Section 430.32(A)"},
+
+  {id:28,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"The maximum branch circuit short-circuit and ground-fault protection for a 10-HP, 460V, 3-phase motor using an inverse time circuit breaker is:",
+   choices:["250% of FLC","200% of FLC","175% of FLC","150% of FLC"],
+   answerIndex:0,
+   explanation:"NEC Table 430.52 — for an inverse time circuit breaker on a 3-phase AC motor, max SCPD = 250% of FLC.",
+   bookRef:"NEC 2026 Table 430.52",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Table 430.52"},
+
+  {id:29,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"What is the full-load current of a 5 HP, 240V single-phase motor?",
+   choices:["17A","24A","28A","34A"],
+   answerIndex:2,
+   explanation:"NEC Table 430.248 — 5 HP, 240V, single-phase motor FLC = 28A.",
+   bookRef:"NEC 2026 Table 430.248",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Table 430.248 (single-phase motors)"},
+
+  // ── GENERAL CODE REQUIREMENTS (Art. 110/230/240) ─────────────────────────
+  {id:30,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"The minimum working space clearance in front of electrical equipment operating at 480V with exposed live parts on one side (Condition 1) is:",
+   choices:["2 feet","3 feet","4 feet","6 feet"],
+   answerIndex:1,
+   explanation:"NEC Table 110.26(A)(1) — for 301-600V with Condition 1 (exposed parts on one side only), minimum clearance = 3 feet.",
+   bookRef:"NEC 2026 Table 110.26(A)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 110 → Table 110.26(A)(1)"},
+
+  {id:31,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"Working space in front of electrical equipment shall NOT be used for:",
+   choices:["Equipment examination","Storage","Equipment maintenance","Equipment adjustment"],
+   answerIndex:1,
+   explanation:"NEC 110.26(B) — the working space in front of electrical equipment must be kept clear and shall not be used for storage.",
+   bookRef:"NEC 2026 110.26(B)",
+   bookLocation:"NEC 2026 → Tab: Art. 110 → Section 110.26(B)"},
+
+  {id:32,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"The maximum overcurrent protection for a 10 AWG copper conductor is:",
+   choices:["20A","25A","30A","40A"],
+   answerIndex:2,
+   explanation:"NEC 240.4(D)(5) — 10 AWG copper is limited to a maximum 30A OCPD.",
+   bookRef:"NEC 2026 240.4(D)(5)",
+   bookLocation:"NEC 2026 → Tab: Art. 240 → Section 240.4(D)"},
+
+  {id:33,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"The service disconnecting means for a one- or two-family dwelling must have a minimum rating of:",
+   choices:["60 amperes","100 amperes","150 amperes","200 amperes"],
+   answerIndex:1,
+   explanation:"NEC 230.79(C) — for a one-family or two-family dwelling unit, the service disconnect must be rated at least 100A, 3-wire.",
+   bookRef:"NEC 2026 230.79(C)",
+   bookLocation:"NEC 2026 → Tab: Art. 230 → Section 230.79(C)"},
+
+  {id:34,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"What is the minimum headroom required in the workspace around electrical equipment?",
+   choices:["5.5 feet","6 feet","6.5 feet","7 feet"],
+   answerIndex:1,
+   explanation:"NEC 110.26(E)(1) — minimum headroom of the working space shall be 6.0 ft for service equipment, switchboards, and panelboards.",
+   bookRef:"NEC 2026 110.26(E)",
+   bookLocation:"NEC 2026 → Tab: Art. 110 → Section 110.26(E)"},
+
+  {id:35,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"What standard size OCPD comes immediately above 60 amperes?",
+   choices:["65A","70A","75A","80A"],
+   answerIndex:1,
+   explanation:"NEC 240.6(A) lists standard OCPD ratings. After 60A comes 70A.",
+   bookRef:"NEC 2026 240.6(A)",
+   bookLocation:"NEC 2026 → Tab: Art. 240 → Section 240.6(A)"},
+
+  // ── OSHA 1926 ────────────────────────────────────────────────────────────
+  {id:36,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"OSHA 29 CFR 1926.404(b)(1)(ii) requires GFCI protection on construction sites for:",
+   choices:["All receptacles on site","120V, 15A and 20A single-phase receptacles not on a GFCI program","Three-phase receptacles only","Only receptacles within 6 feet of water"],
+   answerIndex:1,
+   explanation:"OSHA 1926.404(b)(1)(ii) requires GFCI protection for 120-volt, single-phase, 15- and 20-ampere receptacles on construction sites that are not part of a written assured equipment grounding conductor program.",
+   bookRef:"OSHA 29 CFR 1926.404(b)(1)(ii)",
+   bookLocation:"OSHA 1926 → Subpart K (Electrical) → 1926.404(b)"},
+
+  {id:37,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"Under OSHA 1926, the minimum working clearance for electrical equipment energized at 0-150 volts (Condition 1) is:",
+   choices:["1 foot","2 feet","3 feet","4 feet"],
+   answerIndex:2,
+   explanation:"OSHA 1926.403(i)(1) Table K-1 / NEC 110.26(A)(1) — for 0-150V with Condition 1 (exposed live parts on one side), minimum = 3 feet.",
+   bookRef:"OSHA 1926.403(i)(1) Table K-1",
+   bookLocation:"OSHA 1926 → Subpart K → 1926.403(i)(1)"},
+
+  {id:38,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"Before excavating on a construction site, OSHA requires that you first:",
+   choices:["Obtain a building permit","Determine the location of underground utilities","Notify OSHA","Classify the soil type"],
+   answerIndex:1,
+   explanation:"OSHA 1926.651(b) — before excavating, determine the location of underground installations (utilities). Contact the utility notification service.",
+   bookRef:"OSHA 29 CFR 1926.651(b)",
+   bookLocation:"OSHA 1926 → Subpart P (Excavations) → 1926.651(b)"},
+
+  {id:39,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"Under OSHA fall protection requirements, a fall protection system is required when workers are exposed to falls of:",
+   choices:["4 feet or more","6 feet or more","8 feet or more","10 feet or more"],
+   answerIndex:1,
+   explanation:"OSHA 1926.501(b) — in construction, fall protection is required when workers may fall 6 feet or more to a lower level.",
+   bookRef:"OSHA 29 CFR 1926.501(b)",
+   bookLocation:"OSHA 1926 → Subpart M (Fall Protection) → 1926.501(b)"},
+
+  {id:40,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"The maximum spacing between guardrail posts in a guardrail fall protection system is:",
+   choices:["6 feet","8 feet","10 feet","12 feet"],
+   answerIndex:1,
+   explanation:"OSHA 1926.502(b)(4) — guardrail posts must be spaced no more than 8 feet apart on centers.",
+   bookRef:"OSHA 29 CFR 1926.502(b)(4)",
+   bookLocation:"OSHA 1926 → Subpart M → 1926.502(b)(4)"},
+
+  // ── BUSINESS LAW & PM ────────────────────────────────────────────────────
+  {id:41,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"Which type of contract places the greatest financial risk on the contractor?",
+   choices:["Cost-plus contract","Lump sum (fixed price) contract","Time and materials contract","Unit price contract"],
+   answerIndex:1,
+   explanation:"A lump sum (fixed price) contract requires the contractor to complete all work for a set price. All cost overruns are absorbed by the contractor.",
+   bookRef:"NASCLA Contractors Guide — Contract Types",
+   bookLocation:"NASCLA Business & Law book → Contracts chapter → Contract types section"},
+
+  {id:42,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"A mechanic's lien must typically be filed:",
+   choices:["Before the project starts","Within a statutory period after the last work performed","Within 1 year after project completion","At the time the contract is signed"],
+   answerIndex:1,
+   explanation:"Mechanic's liens have statutory deadlines tied to the last date of work performed. Timeframes vary by state but always measured from last date of labor or materials furnished.",
+   bookRef:"NASCLA Contractors Guide — Lien Laws",
+   bookLocation:"NASCLA Business & Law book → Mechanics Lien chapter"},
+
+  {id:43,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"Which insurance type protects against bodily injury or property damage to a third party on a job site?",
+   choices:["Workers' compensation","Builder's risk","General liability","Professional liability (E&O)"],
+   answerIndex:2,
+   explanation:"General liability insurance covers bodily injury and property damage to third parties. Workers' comp covers employees; builder's risk covers the project itself.",
+   bookRef:"NASCLA Contractors Guide — Insurance",
+   bookLocation:"NASCLA Business & Law book → Insurance chapter"},
+
+  {id:44,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"In project scheduling, the Critical Path Method (CPM) is used to identify:",
+   choices:["The lowest cost sequence of tasks","The longest sequence of tasks that determines project duration","Tasks that can be done simultaneously","The shortest path between start and finish"],
+   answerIndex:1,
+   explanation:"CPM identifies the longest path through the project network — this is the critical path and it determines the minimum project duration.",
+   bookRef:"NASCLA Contractors Guide — Scheduling",
+   bookLocation:"NASCLA Business & Law book → Scheduling chapter → CPM section"},
+
+  {id:45,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"A contractor's overhead typically includes which of the following?",
+   choices:["Direct labor for the project","Material costs for the project","Office rent, admin salaries, vehicle expenses","Subcontractor costs"],
+   answerIndex:2,
+   explanation:"Overhead = indirect costs not directly tied to a specific project (office, admin, insurance, vehicles, tools). Direct labor and materials are job costs.",
+   bookRef:"NASCLA Contractors Guide — Estimating",
+   bookLocation:"NASCLA Business & Law book → Estimating chapter → Overhead section"},
+
+  {id:46,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"Which business structure provides the owner with personal liability protection while allowing pass-through taxation?",
+   choices:["Sole proprietorship","General partnership","Limited Liability Company (LLC)","Corporation (C-Corp)"],
+   answerIndex:2,
+   explanation:"An LLC provides personal liability protection (like a corporation) while income/losses pass through to the owner's personal tax return.",
+   bookRef:"NASCLA Contractors Guide — Business Structures",
+   bookLocation:"NASCLA Business & Law book → Business Structures chapter"},
+
+  {id:47,topic:"business_law",topicLabel:"Business Law & Project Management",
+   question:"A change order in a construction contract is required when:",
+   choices:["A subcontractor is late","The scope of work changes from the original contract","Material prices increase","A worker is injured"],
+   answerIndex:1,
+   explanation:"Change orders document and authorize any changes to the original contract scope, schedule, or price. They protect both parties legally.",
+   bookRef:"NASCLA Contractors Guide — Change Orders",
+   bookLocation:"NASCLA Business & Law book → Contracts chapter → Change Orders section"},
+
+  // ── SPECIAL OCCUPANCIES ──────────────────────────────────────────────────
+  {id:48,topic:"special_occ",topicLabel:"Special Occupancies (Art. 500/517)",
+   question:"A Class I, Division 1 hazardous location is one where:",
+   choices:["Flammable gases are present only during abnormal conditions","Flammable gases are present under normal operating conditions","Combustible dust is normally present","Easily ignitable fibers are stored"],
+   answerIndex:1,
+   explanation:"NEC 500.5(B)(1) — Class I, Division 1: flammable gases or vapors are present in the air under normal operating conditions.",
+   bookRef:"NEC 2026 500.5(B)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 500 → Section 500.5(B)"},
+
+  {id:49,topic:"special_occ",topicLabel:"Special Occupancies (Art. 500/517)",
+   question:"The essential electrical system in a hospital must include which branches?",
+   choices:["Life safety, critical, and equipment branches","Normal and backup power only","Generator and utility branches only","Emergency lighting branch only"],
+   answerIndex:0,
+   explanation:"NEC 517.30 — the essential electrical system for hospitals consists of three branches: life safety branch, critical branch, and equipment branch.",
+   bookRef:"NEC 2026 517.30",
+   bookLocation:"NEC 2026 → Tab: Art. 517 → Section 517.30"},
+
+  {id:50,topic:"special_occ",topicLabel:"Special Occupancies (Art. 500/517)",
+   question:"A Class II location is one that is hazardous because of the presence of:",
+   choices:["Flammable gases","Combustible dust","Easily ignitable fibers","Explosive vapors"],
+   answerIndex:1,
+   explanation:"NEC 500.5(C) — Class II locations are hazardous because combustible dust is present.",
+   bookRef:"NEC 2026 500.5(C)",
+   bookLocation:"NEC 2026 → Tab: Art. 500 → Section 500.5(C)"},
+
+  // ── ELECTRICAL THEORY ────────────────────────────────────────────────────
+  {id:51,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A circuit has a resistance of 20 ohms and is connected to 120V. What is the current?",
+   choices:["3A","6A","240A","0.17A"],
+   answerIndex:1,
+   explanation:"Ohm's Law: I = V/R = 120/20 = 6A.",
+   bookRef:"Formula: I = V/R",
+   bookLocation:"Formula sheet or Ugly's Reference → Ohm's Law"},
+
+  {id:52,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A 240V single-phase motor draws 15A. What is the power consumption?",
+   choices:["16W","3,600W","1,800W","7,200W"],
+   answerIndex:1,
+   explanation:"P = V × I = 240 × 15 = 3,600W = 3.6 kW.",
+   bookRef:"Formula: P = V × I",
+   bookLocation:"Formula sheet → Power formula (single-phase)"},
+
+  {id:53,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A 480V 3-phase motor draws 30A at unity power factor. Approximate power (kW) is:",
+   choices:["14.4 kW","24.9 kW","28.8 kW","43.2 kW"],
+   answerIndex:1,
+   explanation:"P = V × I × 1.732 × PF = 480 × 30 × 1.732 × 1.0 = 24,940W ≈ 24.9 kW.",
+   bookRef:"Formula: P = V × I × 1.732 × PF",
+   bookLocation:"Formula sheet → 3-phase power formula"},
+
+  {id:54,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A 240V single-phase circuit runs 150 ft with #10 AWG copper (CM=10,380), carrying 20A. What is the voltage drop? (K=12.9 for copper)",
+   choices:["3.9V","7.7V","11.6V","15.5V"],
+   answerIndex:1,
+   explanation:"VD = (2 × K × I × L) / CM = (2 × 12.9 × 20 × 150) / 10,380 = 77,400 / 10,380 ≈ 7.46V ≈ 7.7V",
+   bookRef:"Formula: VD = 2KIL/CM | NEC 2026 Annex D",
+   bookLocation:"NEC 2026 → Back of book: Annex D → Voltage drop examples"},
+
+  {id:55,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A motor has an apparent power of 5 kVA and real power of 4 kW. What is the power factor?",
+   choices:["0.60","0.75","0.80","1.25"],
+   answerIndex:2,
+   explanation:"PF = Real Power / Apparent Power = 4 kW / 5 kVA = 0.80",
+   bookRef:"Formula: PF = kW / kVA",
+   bookLocation:"Formula sheet → Power factor formula"},
+
+  {id:56,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"Three resistors of 10Ω, 20Ω, and 30Ω are wired in series across 120V. What current flows?",
+   choices:["1A","2A","3A","6A"],
+   answerIndex:1,
+   explanation:"Series: Total R = 10+20+30 = 60Ω. I = V/R = 120/60 = 2A.",
+   bookRef:"Formula: Series circuits — RT = R1 + R2 + R3",
+   bookLocation:"Formula sheet → Series/Parallel circuits"},
+
+  {id:57,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"Two 60Ω resistors are wired in parallel across 120V. What is the total circuit current?",
+   choices:["1A","2A","3A","4A"],
+   answerIndex:3,
+   explanation:"Each branch: I = 120/60 = 2A. Two parallel branches: total I = 2+2 = 4A.",
+   bookRef:"Formula: Parallel circuits — IT = I1 + I2",
+   bookLocation:"Formula sheet → Parallel circuits"},
+
+  {id:58,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"An AC circuit has resistance of 6Ω and inductive reactance of 8Ω. What is the impedance? (TRAP QUESTION)",
+   choices:["14Ω","10Ω","7Ω","2Ω"],
+   answerIndex:1,
+   explanation:"Z = √(R² + XL²) = √(36 + 64) = √100 = 10Ω. TRAP: You CANNOT simply add R + XL. Always use the Pythagorean formula.",
+   bookRef:"Formula: Z = √(R² + XL²)",
+   bookLocation:"Formula sheet → Impedance formula"},
+
+  {id:59,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"Five 12 AWG THWN conductors are installed in a conduit. Table ampacity = 20A. What is the derated ampacity?",
+   choices:["20A","16A","14A","18A"],
+   answerIndex:1,
+   explanation:"5 conductors = 80% adjustment factor per Table 310.15(C)(1). 20 × 0.80 = 16A.",
+   bookRef:"NEC 2026 Table 310.15(C)(1)",
+   bookLocation:"NEC 2026 → Tab: Art. 310 → Table 310.15(C)(1)"},
+
+  {id:60,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"A single-phase, 25 kVA transformer has a 240V secondary. What is the full-load secondary current?",
+   choices:["52A","104A","208A","416A"],
+   answerIndex:1,
+   explanation:"I = kVA × 1000 / V = 25,000 / 240 = 104.2A.",
+   bookRef:"Formula: I = kVA × 1000 / V",
+   bookLocation:"Formula sheet → Transformer formulas"},
+
+  {id:61,topic:"theory",topicLabel:"Electrical Theory & Calculations",
+   question:"The NEC recommends a maximum voltage drop of what percentage for a branch circuit?",
+   choices:["2%","3%","5%","8%"],
+   answerIndex:1,
+   explanation:"NEC Annex D (informational) recommends no more than 3% voltage drop on a branch circuit, and no more than 5% total (feeder + branch).",
+   bookRef:"NEC 2026 Annex D",
+   bookLocation:"NEC 2026 → Back of book: Annex D"},
+
+  // ── NFPA 70E ─────────────────────────────────────────────────────────────
+  {id:62,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"Energized electrical work may be performed (per NFPA 70E) when:",
+   choices:["The contractor requests it","Cost savings justify it","De-energizing creates additional hazard or is infeasible due to equipment design","OSHA grants a variance"],
+   answerIndex:2,
+   explanation:"NFPA 70E 130.2(A) — energized work requires written justification showing that de-energizing introduces additional hazards or is infeasible due to continuity of service or equipment design.",
+   bookRef:"NFPA 70E 130.2(A)",
+   bookLocation:"NFPA 70E → Article 130 → Section 130.2(A)"},
+
+  {id:63,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"A 'qualified person' per NFPA 70E is one who:",
+   choices:["Holds an electrician's license","Has 5+ years field experience","Has skills and training to work safely on electrical equipment and can identify hazards","Passes an arc flash assessment annually"],
+   answerIndex:2,
+   explanation:"NFPA 70E Article 100 defines a qualified person as one with skills, knowledge, and training related to construction/operation of electrical equipment and trained to recognize and avoid hazards.",
+   bookRef:"NFPA 70E Article 100",
+   bookLocation:"NFPA 70E → Article 100 → Definitions"},
+
+  {id:64,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"Before working within the arc flash boundary on energized equipment, what is required?",
+   choices:["Safety glasses only","Rubber gloves only","Appropriate arc-rated PPE based on incident energy or PPE category","No PPE needed if under 480V"],
+   answerIndex:2,
+   explanation:"NFPA 70E 130.5 — arc-rated PPE appropriate to the incident energy level or the PPE category is required before work within the arc flash boundary.",
+   bookRef:"NFPA 70E 130.5",
+   bookLocation:"NFPA 70E → Article 130 → Section 130.5"},
+
+  {id:65,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"Lockout/Tagout (LOTO) must be applied whenever:",
+   choices:["Only on circuits over 480V","Equipment is serviced/maintained and unexpected energization could cause injury","Only when an OSHA inspector is present","For circuits under load only"],
+   answerIndex:1,
+   explanation:"OSHA 1910.147 and NFPA 70E 120.1 — LOTO is required whenever servicing or maintenance on machinery/equipment where unexpected energization, startup, or release of energy could cause injury.",
+   bookRef:"NFPA 70E 120.1 / OSHA 1910.147",
+   bookLocation:"NFPA 70E → Article 120 → Section 120.1"},
+
+  {id:66,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"An arc flash risk assessment must be performed:",
+   choices:["Annually for all facilities","Only after an arc flash incident occurs","Before work on electrical equipment where an arc flash hazard exists","Only for facilities above 600V"],
+   answerIndex:2,
+   explanation:"NFPA 70E 130.5(A) — an arc flash risk assessment shall be performed before a worker performs a task on electrical equipment where an arc flash hazard exists.",
+   bookRef:"NFPA 70E 130.5(A)",
+   bookLocation:"NFPA 70E → Article 130 → Section 130.5(A)"},
+
+  {id:67,topic:"nfpa70e",topicLabel:"NFPA 70E Electrical Safety",
+   question:"The restricted approach boundary for shock protection is:",
+   choices:["The same as the limited approach boundary","Set by the employer only","The distance within which only qualified persons with appropriate PPE may work","Only applicable to voltages over 1,000V"],
+   answerIndex:2,
+   explanation:"NFPA 70E Table 130.4(D)(a) — the restricted approach boundary is the distance from exposed energized conductors within which only qualified persons using appropriate PPE may work.",
+   bookRef:"NFPA 70E Table 130.4(D)(a)",
+   bookLocation:"NFPA 70E → Article 130 → Table 130.4(D)(a)"},
+
+  // ── ADDITIONAL NEC QUESTIONS ─────────────────────────────────────────────
+  {id:68,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"The ampacity of 8 AWG copper THHN conductor in a conduit with 3 current-carrying conductors at 75°C is:",
+   choices:["40A","50A","55A","65A"],
+   answerIndex:1,
+   explanation:"NEC 2026 Table 310.16 — 8 AWG copper THHN at 75°C column = 50A.",
+   bookRef:"NEC 2026 Table 310.16",
+   bookLocation:"NEC 2026 → Mike Holt Tab: Art. 310 → Table 310.16"},
+
+  {id:69,topic:"grounding",topicLabel:"Grounding & Bonding (Art. 250)",
+   question:"When using a concrete-encased electrode (Ufer ground), the conductor must be at least how many feet of bare copper in the concrete?",
+   choices:["10 feet","15 feet","20 feet","25 feet"],
+   answerIndex:2,
+   explanation:"NEC 250.52(A)(3) — concrete-encased electrode requires at least 20 ft of bare copper conductor or rebar in contact with concrete at the bottom of the foundation.",
+   bookRef:"NEC 2026 250.52(A)(3)",
+   bookLocation:"NEC 2026 → Tab: Art. 250 → Section 250.52(A)(3)"},
+
+  {id:70,topic:"general_code",topicLabel:"General Code Requirements (Art. 110/230/240)",
+   question:"What is the minimum illumination required in electrical equipment rooms containing service equipment, switchboards, or motor control centers?",
+   choices:["No minimum required","At least one light fixture","Minimum 10 footcandles","Written approval required"],
+   answerIndex:1,
+   explanation:"NEC 110.26(D) — illumination shall be provided for all working spaces about service equipment, switchboards, switchgear, motor control centers, and panelboards.",
+   bookRef:"NEC 2026 110.26(D)",
+   bookLocation:"NEC 2026 → Tab: Art. 110 → Section 110.26(D)"},
+
+  {id:71,topic:"branch_circuits",topicLabel:"Branch Circuits & Load Calculations (Art. 210/220)",
+   question:"AFCI protection is required for branch circuits supplying 120V, single-phase, 15A and 20A outlets in which location?",
+   choices:["Garages only","Kitchens and bathrooms only","All dwelling unit bedrooms","All rooms in commercial buildings"],
+   answerIndex:2,
+   explanation:"NEC 210.12(A) — AFCI protection is required for all 120V, 15A and 20A branch circuits supplying outlets in dwelling unit sleeping rooms (bedrooms).",
+   bookRef:"NEC 2026 210.12(A)",
+   bookLocation:"NEC 2026 → Tab: Art. 210 → Section 210.12(A)"},
+
+  {id:72,topic:"motors",topicLabel:"Motors (Art. 430)",
+   question:"The branch circuit conductors supplying multiple motors must have an ampacity not less than:",
+   choices:["100% of all motor FLCs combined","125% of the largest motor FLC + 100% of all other motor FLCs","125% of all motor FLCs combined","150% of the largest motor FLC"],
+   answerIndex:1,
+   explanation:"NEC 430.24 — for multiple motors, feeder conductors must be rated 125% of the largest motor's FLC plus 100% of the FLCs of all other motors.",
+   bookRef:"NEC 2026 430.24",
+   bookLocation:"NEC 2026 → Tab: Art. 430 → Section 430.24"},
+
+  {id:73,topic:"conductors",topicLabel:"Conductors & Wiring Methods (Art. 300/310/314)",
+   question:"A box fill calculation for a switch box contains 3 #12 AWG conductors entering and one switch (device). The minimum box volume required is:",
+   choices:["6.75 in³","9 in³","11.25 in³","13.5 in³"],
+   answerIndex:2,
+   explanation:"#12 AWG = 2.25 in³ each. 3 conductors = 6.75 in³. Device = double allowance = 2 × 2.25 = 4.50 in³. Total = 6.75 + 4.50 = 11.25 in³. (NEC 314.16, Table 314.16(B))",
+   bookRef:"NEC 2026 314.16 and Table 314.16(B)",
+   bookLocation:"NEC 2026 → Tab: Art. 314 → Table 314.16(B)"},
+
+  {id:74,topic:"osha",topicLabel:"OSHA 1926 Safety",
+   question:"Under OSHA 1926.502, the top rail of a guardrail system must be at a height of approximately:",
+   choices:["36 inches","38-45 inches","42 inches plus or minus 3 inches","48 inches"],
+   answerIndex:2,
+   explanation:"OSHA 1926.502(b)(1) — the top rail must be 42 inches (± 3 inches) above the walking/working surface.",
+   bookRef:"OSHA 29 CFR 1926.502(b)(1)",
+   bookLocation:"OSHA 1926 → Subpart M → 1926.502(b)(1)"},
+
+  {id:75,topic:"special_occ",topicLabel:"Special Occupancies (Art. 500/517)",
+   question:"Class I, Division 2 hazardous locations are those where flammable gases or vapors are:",
+   choices:["Present continuously under normal conditions","Present only under abnormal conditions (equipment failure, accidents)","Never present","Present in low concentrations only"],
+   answerIndex:1,
+   explanation:"NEC 500.5(B)(2) — Class I, Division 2: flammable gases or vapors are handled/processed but are normally in closed containers and could only be present in abnormal conditions.",
+   bookRef:"NEC 2026 500.5(B)(2)",
+   bookLocation:"NEC 2026 → Tab: Art. 500 → Section 500.5(B)(2)"}
+];
+
+// =============================================
+// TOPIC METADATA
+// =============================================
+const TOPICS = [
+  {key:"grounding",    label:"Grounding & Bonding (Art. 250)"},
+  {key:"branch_circuits",label:"Branch Circuits & Load Calcs (Art. 210/220)"},
+  {key:"conductors",   label:"Conductors & Wiring Methods (Art. 300/310/314)"},
+  {key:"motors",       label:"Motors (Art. 430)"},
+  {key:"general_code", label:"General Code Requirements (Art. 110/230/240)"},
+  {key:"osha",         label:"OSHA 1926 Safety"},
+  {key:"business_law", label:"Business Law & Project Management"},
+  {key:"special_occ",  label:"Special Occupancies (Art. 500/517)"},
+  {key:"theory",       label:"Electrical Theory & Calculations"},
+  {key:"nfpa70e",      label:"NFPA 70E Electrical Safety"}
+];
+
+// =============================================
+// STATE
+// =============================================
+let state = {
+  mode: 'baseline',
+  selectedTopics: new Set(TOPICS.map(t=>t.key)),
+  questionCount: 40,
+  questions: [],
+  currentIndex: 0,
+  answers: [],  // {qIndex, selectedIndex, correct, lookupTime}
+  flagged: new Set(),
+  elapsedTimer: null,
+  elapsedSecs: 0,
+  lookupTimer: null,
+  lookupSecs: 0,
+  lookupRunning: false,
+  shuffledChoices: [],  // per question: array of {text, originalIndex}
+};
+
+// =============================================
+// SETUP
+// =============================================
+function buildTopicGrid() {
+  const grid = document.getElementById('topic-grid');
+  grid.innerHTML = '';
+  TOPICS.forEach(t => {
+    const count = QUESTIONS.filter(q=>q.topic===t.key).length;
+    const div = document.createElement('div');
+    div.className='topic-check';
+    div.innerHTML=`<input type="checkbox" id="topic-${t.key}" value="${t.key}" checked onchange="onTopicChange()">
+      <label for="topic-${t.key}">${t.label}</label>
+      <span class="topic-count">${count}q</span>`;
+    grid.appendChild(div);
+  });
+  updateAvailableLabel();
+}
+
+function onTopicChange() {
+  state.selectedTopics = new Set(
+    Array.from(document.querySelectorAll('#topic-grid input:checked')).map(i=>i.value)
+  );
+  updateAvailableLabel();
+}
+
+function updateAvailableLabel() {
+  const available = QUESTIONS.filter(q=>state.selectedTopics.has(q.topic)).length;
+  document.getElementById('q-available-label').textContent = `(${available} questions available)`;
+}
+
+function selectAll(val) {
+  document.querySelectorAll('#topic-grid input[type=checkbox]').forEach(i=>{ i.checked=val; });
+  onTopicChange();
+}
+
+function selectMode(el) {
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.mode = el.dataset.mode;
+}
+
+function startExam() {
+  const qc = document.getElementById('q-count').value;
+  let pool = QUESTIONS.filter(q=>state.selectedTopics.has(q.topic));
+  if(pool.length === 0) { alert('Please select at least one topic.'); return; }
+  shuffle(pool);
+  const count = qc === 'all' ? pool.length : Math.min(parseInt(qc), pool.length);
+  state.questions = pool.slice(0, count);
+  state.currentIndex = 0;
+  state.answers = [];
+  state.flagged = new Set();
+  state.elapsedSecs = 0;
+  showScreen('question');
+  startElapsedTimer();
+  renderQuestion();
+}
+
+// =============================================
+// QUESTION RENDERING
+// =============================================
+function renderQuestion() {
+  const q = state.questions[state.currentIndex];
+  const total = state.questions.length;
+  const num = state.currentIndex + 1;
+
+  document.getElementById('q-num-label').textContent = `Question ${num} of ${total}`;
+  document.getElementById('q-topic-label').textContent = q.topicLabel;
+  document.getElementById('progress-fill').style.width = ((num/total)*100)+'%';
+  document.getElementById('q-text').textContent = q.question;
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('next-btn').classList.add('hidden');
+
+  // Shuffle choices
+  let choices = q.choices.map((text,i)=>({text,originalIndex:i}));
+  shuffle(choices);
+  state.shuffledChoices = choices;
+
+  // Render choice buttons
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-label">${labels[i]}</span>${escHtml(choice.text)}`;
+    btn.dataset.shuffledIndex = i;
+    btn.onclick = () => selectAnswer(i, btn);
+    choicesDiv.appendChild(btn);
+  });
+
+  // Flag button state
+  const flagBtn = document.getElementById('flag-btn');
+  flagBtn.textContent = state.flagged.has(state.currentIndex) ? '🚩 Flagged' : '🚩 Flag Question';
+  flagBtn.style.color = state.flagged.has(state.currentIndex) ? 'var(--gold)' : '';
+
+  // Lookup timer box
+  const ltBox = document.getElementById('lookup-timer-box');
+  ltBox.classList.add('hidden');
+  state.lookupRunning = false;
+  state.lookupSecs = 0;
+  if(state.lookupTimer) { clearInterval(state.lookupTimer); state.lookupTimer=null; }
+}
+
+function selectAnswer(shuffledIndex, clickedBtn) {
+  const q = state.questions[state.currentIndex];
+  const choice = state.shuffledChoices[shuffledIndex];
+  const correct = choice.originalIndex === q.answerIndex;
+
+  // Disable all buttons
+  document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; });
+
+  if(state.mode === 'baseline') {
+    // Just record and move on
+    state.answers.push({qIndex: state.currentIndex, selectedOriginalIndex: choice.originalIndex, correct, lookupTime: null});
+    setTimeout(()=>nextQuestion(), 180);
+    return;
+  }
+
+  // Open book or Lookup — show feedback
+  clickedBtn.classList.add(correct ? 'correct' : 'wrong');
+  if(!correct) {
+    // Highlight the correct answer
+    const correctShuffledIdx = state.shuffledChoices.findIndex(c=>c.originalIndex===q.answerIndex);
+    document.querySelectorAll('.choice-btn')[correctShuffledIdx].classList.add('correct');
+  }
+
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  fb.className = 'feedback-box ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.innerHTML = `<div class="fb-verdict ${correct?'fb-correct':'fb-wrong'}">${correct ? '✓ Correct!' : '✗ Incorrect'}</div>
+    <div class="fb-explanation">${escHtml(q.explanation)}</div>
+    <div class="fb-ref">📖 ${escHtml(q.bookRef)}</div>
+    <div class="fb-location">📍 ${escHtml(q.bookLocation)}</div>`;
+
+  state.answers.push({qIndex: state.currentIndex, selectedOriginalIndex: choice.originalIndex, correct, lookupTime: null});
+
+  if(state.mode === 'lookup') {
+    // Show lookup timer
+    const ltBox = document.getElementById('lookup-timer-box');
+    ltBox.classList.remove('hidden');
+    document.getElementById('lookup-clock').textContent = '0.0s';
+    document.getElementById('lookup-start-btn').classList.remove('hidden');
+    document.getElementById('lookup-stop-btn').classList.add('hidden');
+    state.lookupSecs = 0;
+    state.lookupRunning = false;
+  }
+
+  document.getElementById('next-btn').classList.remove('hidden');
+}
+
+function startLookupTimer() {
+  state.lookupSecs = 0;
+  state.lookupRunning = true;
+  document.getElementById('lookup-start-btn').classList.add('hidden');
+  document.getElementById('lookup-stop-btn').classList.remove('hidden');
+  if(state.lookupTimer) clearInterval(state.lookupTimer);
+  const start = Date.now();
+  state.lookupTimer = setInterval(()=>{
+    state.lookupSecs = (Date.now() - start)/1000;
+    document.getElementById('lookup-clock').textContent = state.lookupSecs.toFixed(1)+'s';
+    const cls = state.lookupSecs <= 90 ? 'var(--green)' : state.lookupSecs <= 150 ? '#f39c12' : 'var(--red)';
+    document.getElementById('lookup-clock').style.color = cls;
+  }, 100);
+}
+
+function stopLookupTimer() {
+  if(state.lookupTimer) { clearInterval(state.lookupTimer); state.lookupTimer=null; }
+  state.lookupRunning = false;
+  // Save lookup time to last answer
+  if(state.answers.length > 0) state.answers[state.answers.length-1].lookupTime = state.lookupSecs;
+  document.getElementById('lookup-stop-btn').classList.add('hidden');
+  document.getElementById('lookup-start-btn').textContent = '✓ Timed!';
+  document.getElementById('lookup-start-btn').classList.remove('hidden');
+  document.getElementById('lookup-start-btn').disabled = true;
+}
+
+function nextQuestion() {
+  state.currentIndex++;
+  if(state.currentIndex >= state.questions.length) {
+    finishExam();
+  } else {
+    renderQuestion();
+  }
+}
+
+function flagQuestion() {
+  if(state.flagged.has(state.currentIndex)) {
+    state.flagged.delete(state.currentIndex);
+  } else {
+    state.flagged.add(state.currentIndex);
+  }
+  const flagBtn = document.getElementById('flag-btn');
+  flagBtn.textContent = state.flagged.has(state.currentIndex) ? '🚩 Flagged' : '🚩 Flag Question';
+  flagBtn.style.color = state.flagged.has(state.currentIndex) ? 'var(--gold)' : '';
+}
+
+// =============================================
+// TIMER
+// =============================================
+function startElapsedTimer() {
+  if(state.elapsedTimer) clearInterval(state.elapsedTimer);
+  const start = Date.now() - (state.elapsedSecs * 1000);
+  state.elapsedTimer = setInterval(()=>{
+    state.elapsedSecs = Math.floor((Date.now()-start)/1000);
+    const m = Math.floor(state.elapsedSecs/60);
+    const s = state.elapsedSecs % 60;
+    document.getElementById('q-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  }, 1000);
+}
+
+// =============================================
+// RESULTS
+// =============================================
+function finishExam() {
+  if(state.elapsedTimer) { clearInterval(state.elapsedTimer); state.elapsedTimer=null; }
+  showScreen('results');
+
+  // Handle baseline: some questions may not have answers (if fewer answers than questions)
+  // In baseline mode we auto-advance so all should be answered
+  const total = state.questions.length;
+  const correct = state.answers.filter(a=>a.correct).length;
+  const pct = Math.round((correct/total)*100);
+
+  document.getElementById('score-pct').textContent = pct+'%';
+  document.getElementById('score-raw').textContent = `${correct} / ${total}`;
+
+  const verdict = document.getElementById('verdict');
+  verdict.textContent = pct >= 75 ? '✓ PASS' : '✗ FAIL';
+  verdict.className = 'verdict ' + (pct >= 75 ? 'pass' : 'fail');
+
+  document.getElementById('result-mode-note').textContent = state.mode === 'baseline'
+    ? '(Baseline Mode — raw knowledge test, no books)'
+    : state.mode === 'openbook' ? '(Open Book Mode)' : '(Lookup Training Mode)';
+
+  // Topic breakdown
+  const topicStats = {};
+  state.answers.forEach(a => {
+    const q = state.questions[a.qIndex];
+    if(!topicStats[q.topic]) topicStats[q.topic] = {label:q.topicLabel, correct:0, total:0};
+    topicStats[q.topic].total++;
+    if(a.correct) topicStats[q.topic].correct++;
+  });
+
+  const tbl = document.getElementById('topic-breakdown');
+  tbl.innerHTML = '<tr><th>Topic</th><th>Score</th><th></th></tr>';
+  Object.values(topicStats).forEach(ts => {
+    const p = Math.round((ts.correct/ts.total)*100);
+    const barCls = p>=75?'bar-green':p>=50?'bar-yellow':'bar-red';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${ts.label}</td><td>${ts.correct}/${ts.total} (${p}%)</td>
+      <td style="width:120px"><div class="bar-mini"><div class="bar-fill ${barCls}" style="width:${p}%"></div></div></td>`;
+    tbl.appendChild(tr);
+  });
+
+  // Lookup summary
+  if(state.mode === 'lookup') {
+    document.getElementById('lookup-summary-card').classList.remove('hidden');
+    const lookupByTopic = {};
+    state.answers.forEach(a => {
+      if(a.lookupTime !== null) {
+        const q = state.questions[a.qIndex];
+        if(!lookupByTopic[q.topic]) lookupByTopic[q.topic] = {label:q.topicLabel, times:[]};
+        lookupByTopic[q.topic].times.push(a.lookupTime);
+      }
+    });
+    const ls = document.getElementById('lookup-summary');
+    ls.innerHTML = '<tr><th>Topic</th><th>Avg Lookup Time</th><th>Speed</th></tr>';
+    Object.values(lookupByTopic).forEach(lt => {
+      const avg = lt.times.reduce((a,b)=>a+b,0)/lt.times.length;
+      const speed = avg<=90?'🟢 Fast':'⚠️ Drill More';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${lt.label}</td><td>${avg.toFixed(1)}s</td><td>${speed}</td>`;
+      ls.appendChild(tr);
+    });
+  } else {
+    document.getElementById('lookup-summary-card').classList.add('hidden');
+  }
+}
+
+function showReview() {
+  const wrong = state.answers.filter(a=>!a.correct || state.flagged.has(a.qIndex));
+  if(wrong.length === 0) { alert('No wrong answers to review! 🎉'); return; }
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  wrong.forEach((a,ri) => {
+    const q = state.questions[a.qIndex];
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    const flagNote = state.flagged.has(a.qIndex) ? ' 🚩' : '';
+    let choicesHtml = q.choices.map((c,ci) => {
+      let cls = 'rc-neutral';
+      if(ci === q.answerIndex) cls = 'rc-correct';
+      else if(ci === a.selectedOriginalIndex && ci !== q.answerIndex) cls = 'rc-wrong';
+      const marker = ci===q.answerIndex ? '✓' : (ci===a.selectedOriginalIndex ? '✗' : '');
+      return `<div class="review-choice ${cls}">${marker ? `<strong>${marker}</strong>` : ''} ${labels[ci]}. ${escHtml(c)}</div>`;
+    }).join('');
+    div.innerHTML = `<h4>Q${a.qIndex+1} · ${q.topicLabel}${flagNote}</h4>
+      <div class="review-q">${escHtml(q.question)}</div>
+      ${choicesHtml}
+      <div class="review-exp">${escHtml(q.explanation)}</div>
+      <div class="review-ref">📖 ${escHtml(q.bookRef)} — ${escHtml(q.bookLocation)}</div>`;
+    list.appendChild(div);
+  });
+  showScreen('review');
+}
+
+function backToResults() { showScreen('results'); }
+
+function retakeSame() {
+  state.currentIndex = 0;
+  state.answers = [];
+  state.flagged = new Set();
+  state.elapsedSecs = 0;
+  shuffle(state.questions);
+  showScreen('question');
+  startElapsedTimer();
+  renderQuestion();
+}
+
+function newTest() {
+  if(state.elapsedTimer) { clearInterval(state.elapsedTimer); state.elapsedTimer=null; }
+  showScreen('setup');
+}
+
+// =============================================
+// UTILS
+// =============================================
+function showScreen(name) {
+  ['setup','question','results','review'].forEach(s=>{
+    document.getElementById('screen-'+s).style.display = s===name ? 'block' : 'none';
+  });
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// =============================================
+// KEYBOARD SHORTCUTS
+// =============================================
+document.addEventListener('keydown', e => {
+  const screen = document.getElementById('screen-question');
+  if(screen.style.display === 'none') return;
+
+  const keyMap = {a:0,b:1,c:2,d:3,'1':0,'2':1,'3':2,'4':3};
+  const k = e.key.toLowerCase();
+
+  if(k === 'f') { flagQuestion(); return; }
+
+  if((k === 'enter' || k === ' ') && !document.getElementById('next-btn').classList.contains('hidden')) {
+    e.preventDefault();
+    nextQuestion();
+    return;
+  }
+
+  if(keyMap[k] !== undefined) {
+    const btns = document.querySelectorAll('.choice-btn:not(:disabled)');
+    if(btns.length > 0 && keyMap[k] < btns.length) {
+      btns[keyMap[k]].click();
+    }
+  }
+});
+
+// =============================================
+// INIT
+// =============================================
+buildTopicGrid();
+showScreen('setup');
+document.getElementById('q-count').addEventListener('change', updateAvailableLabel);
+</script>
+</body>
+</html>
