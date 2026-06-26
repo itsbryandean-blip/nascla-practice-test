@@ -77,6 +77,9 @@
   .choice-btn:disabled { cursor: default; }
   .choice-btn.correct { border-color: var(--green); background: rgba(46,204,113,0.12); }
   .choice-btn.wrong { border-color: var(--red); background: rgba(231,76,60,0.12); }
+  .choice-btn.selected-choice { border-color: var(--gold); background: rgba(201,168,76,0.18); }
+  .btn-submit { background: #1a5fa8; color: var(--white); border: 2px solid #3498db; font-size: 1rem; padding: 12px 32px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+  .btn-submit:hover { background: #2471c8; transform: translateY(-1px); }
   .choice-label { width: 32px; height: 32px; border-radius: 50%; background: var(--navy3); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; color: var(--gold); }
   .feedback-box { margin-top: 20px; padding: 18px; border-radius: var(--radius); animation: fadeIn 0.3s; }
   .feedback-box.correct-fb { background: rgba(46,204,113,0.1); border: 1px solid var(--green); }
@@ -220,6 +223,7 @@
     </div>
     <div class="q-actions">
       <button class="btn btn-gray btn-sm" id="flag-btn" onclick="flagQuestion()">🚩 Flag Question</button>
+      <button class="btn-submit hidden" id="submit-btn" onclick="submitAnswer()">✔ Submit Answer</button>
       <button class="btn btn-gold hidden" id="next-btn" onclick="nextQuestion()">Next Question →</button>
     </div>
   </div><!-- /question -->
@@ -881,6 +885,87 @@ const QUESTIONS = [
 ];
 
 // =============================================
+// UGLY'S 2023 COVERAGE
+// =============================================
+const UGLYS = {
+  1:  {covered:true,  note:"✅ Yes — Ugly's 2023 has EGC sizing table (mirrors NEC Table 250.122) in the Grounding section."},
+  2:  {covered:false, note:"❌ No — Specific NEC rule text. Use NEC 2026 Art. 250."},
+  3:  {covered:true,  note:"✅ Yes — Ugly's 2023 has GEC sizing table (mirrors NEC Table 250.66)."},
+  4:  {covered:false, note:"❌ No — Grounding electrode definitions/rules. Use NEC 2026 250.52."},
+  5:  {covered:false, note:"❌ No — Code rule text only. Use NEC 2026 250.52(A)(1)."},
+  6:  {covered:false, note:"❌ No — Code rule text only. Use NEC 2026 250.102(C)."},
+  7:  {covered:false, note:"❌ No — Code rule text only. Use NEC 2026 250.28(A)."},
+  8:  {covered:true,  note:"✅ Yes — Ugly's 2023 has EGC sizing table (mirrors NEC Table 250.122)."},
+  9:  {covered:false, note:"❌ No — Code rule (210.21). Use NEC 2026."},
+  10: {covered:false, note:"❌ No — GFCI location rules. Use NEC 2026 210.8(A)."},
+  11: {covered:false, note:"❌ No — Load calculation rule. Use NEC 2026 220.52(A)."},
+  12: {covered:false, note:"❌ No — Code rule. Use NEC 2026 210.11(C)(1)."},
+  13: {covered:false, note:"❌ No — Code rule (GFCI + dedicated circuit). Use NEC 2026 210.8 + 210.11."},
+  14: {covered:false, note:"❌ No — Code rule. Use NEC 2026 240.24(E)."},
+  15: {covered:false, note:"❌ No — Demand factor table. Use NEC 2026 Table 220.42."},
+  16: {covered:false, note:"❌ No — Load calculation table. Use NEC 2026 Table 220.12."},
+  17: {covered:true,  note:"✅ Yes — Ugly's 2023 has full ampacity Table 310.16 (THWN/THHN at 60/75/90°C)."},
+  18: {covered:true,  note:"✅ Yes — Ugly's 2023 has conductor adjustment factor table (mirrors Table 310.15(C)(1))."},
+  19: {covered:true,  note:"✅ Yes — Ugly's 2023 has burial depth table (mirrors NEC Table 300.5)."},
+  20: {covered:true,  note:"✅ Yes — Ugly's 2023 notes the 360° maximum total bends rule between pull points."},
+  21: {covered:true,  note:"✅ Yes — Ugly's 2023 has conduit fill percentages (1 wire=53%, 2 wires=31%, 3+ wires=40%)."},
+  22: {covered:false, note:"❌ No — Code rule (6\" free conductor minimum). Use NEC 2026 300.14."},
+  23: {covered:false, note:"❌ No — NM cable restrictions. Use NEC 2026 334.10/334.12."},
+  24: {covered:true,  note:"✅ Yes — Ugly's 2023 has max conductor fill tables by conduit type and wire size (mirrors Annex C)."},
+  25: {covered:false, note:"❌ No — Motor conductor sizing rule (125%). Ugly's has FLA tables but NOT the % rules. Use NEC 2026 430.22."},
+  26: {covered:true,  note:"✅ Yes — Ugly's 2023 has 3-phase motor FLA table (mirrors NEC Table 430.250)."},
+  27: {covered:false, note:"❌ No — Motor overload protection % rules. Use NEC 2026 430.32(A)(1)."},
+  28: {covered:false, note:"❌ No — Motor SCPD % rules. Use NEC 2026 Table 430.52."},
+  29: {covered:true,  note:"✅ Yes — Ugly's 2023 has single-phase motor FLA table (mirrors NEC Table 430.248)."},
+  30: {covered:false, note:"❌ No — Working clearance table. Use NEC 2026 Table 110.26(A)(1)."},
+  31: {covered:false, note:"❌ No — Code rule. Use NEC 2026 110.26(B)."},
+  32: {covered:true,  note:"✅ Yes — Ugly's 2023 has conductor OCPD protection table (conductor size vs. max OCPD, per 240.4(D))."},
+  33: {covered:false, note:"❌ No — Service disconnect minimum rating rule. Use NEC 2026 230.79(C)."},
+  34: {covered:false, note:"❌ No — Headroom requirement. Use NEC 2026 110.26(E)."},
+  35: {covered:true,  note:"✅ Yes — Ugly's 2023 lists standard OCPD ratings (per NEC 240.6(A))."},
+  36: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.404."},
+  37: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.403."},
+  38: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.651."},
+  39: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.501."},
+  40: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.502."},
+  41: {covered:false, note:"❌ No — Business/contract concept. Use NASCLA Contractors Guide."},
+  42: {covered:false, note:"❌ No — Mechanic's lien law. Use NASCLA Contractors Guide or state statutes."},
+  43: {covered:false, note:"❌ No — Insurance concepts. Use NASCLA Contractors Guide."},
+  44: {covered:false, note:"❌ No — Project management/CPM. Use NASCLA Contractors Guide."},
+  45: {covered:false, note:"❌ No — Estimating/overhead. Use NASCLA Contractors Guide."},
+  46: {covered:false, note:"❌ No — Business structures. Use NASCLA Contractors Guide."},
+  47: {covered:false, note:"❌ No — Change orders. Use NASCLA Contractors Guide."},
+  48: {covered:false, note:"❌ No — Hazardous location classifications. Use NEC 2026 Art. 500."},
+  49: {covered:false, note:"❌ No — Healthcare electrical systems. Use NEC 2026 Art. 517."},
+  50: {covered:false, note:"❌ No — Hazardous location classifications. Use NEC 2026 Art. 500."},
+  51: {covered:true,  note:"✅ Yes — Ugly's 2023 has Ohm's Law (I = V/R) in the Electrical Formulas section."},
+  52: {covered:true,  note:"✅ Yes — Ugly's 2023 has single-phase power formula (P = V × I)."},
+  53: {covered:true,  note:"✅ Yes — Ugly's 2023 has 3-phase power formula (P = V × I × 1.732 × PF)."},
+  54: {covered:true,  note:"✅ Yes — Ugly's 2023 has voltage drop formula (VD = 2KIL/CM) in the Voltage Drop section."},
+  55: {covered:true,  note:"✅ Yes — Ugly's 2023 has power factor formula (PF = kW / kVA)."},
+  56: {covered:true,  note:"✅ Yes — Ugly's 2023 has series circuit formulas (RT = R1 + R2 + R3)."},
+  57: {covered:true,  note:"✅ Yes — Ugly's 2023 has parallel circuit current formulas (IT = I1 + I2)."},
+  58: {covered:true,  note:"✅ Yes — Ugly's 2023 has impedance formula Z = √(R² + XL²)."},
+  59: {covered:true,  note:"✅ Yes — Ugly's 2023 has conductor adjustment factor table (derating for 4-6 conductors = 80%)."},
+  60: {covered:true,  note:"✅ Yes — Ugly's 2023 has transformer formulas (I = kVA × 1000 / V)."},
+  61: {covered:false, note:"❌ No — NEC Annex D voltage drop recommendation (3%/5%). This is informational text not in Ugly's. Use NEC 2026 Annex D."},
+  62: {covered:false, note:"❌ No — NFPA 70E content. Use NFPA 70E 2021/2024 Art. 130."},
+  63: {covered:false, note:"❌ No — NFPA 70E definitions. Use NFPA 70E Art. 100."},
+  64: {covered:false, note:"❌ No — NFPA 70E PPE requirements. Use NFPA 70E Art. 130."},
+  65: {covered:false, note:"❌ No — NFPA 70E / OSHA LOTO. Use NFPA 70E Art. 120."},
+  66: {covered:false, note:"❌ No — NFPA 70E arc flash assessment. Use NFPA 70E 130.5(A)."},
+  67: {covered:false, note:"❌ No — NFPA 70E approach boundaries. Use NFPA 70E Table 130.4(D)(a)."},
+  68: {covered:true,  note:"✅ Yes — Ugly's 2023 has full ampacity Table 310.16 (8 AWG THHN at 75°C column = 50A)."},
+  69: {covered:false, note:"❌ No — Concrete-encased electrode (Ufer) rule. Use NEC 2026 250.52(A)(3)."},
+  70: {covered:false, note:"❌ No — Illumination requirement rule. Use NEC 2026 110.26(D)."},
+  71: {covered:false, note:"❌ No — AFCI bedroom requirement. Use NEC 2026 210.12(A)."},
+  72: {covered:false, note:"❌ No — Multiple motor feeder sizing rule. Use NEC 2026 430.24."},
+  73: {covered:true,  note:"✅ Yes — Ugly's 2023 has box fill tables (volume allowances per conductor size, mirrors Table 314.16(B))."},
+  74: {covered:false, note:"❌ No — OSHA regulation. Use OSHA 29 CFR 1926.502(b)(1)."},
+  75: {covered:false, note:"❌ No — Hazardous location (Div. 2) classification. Use NEC 2026 500.5(B)(2)."}
+};
+
+// =============================================
 // TOPIC METADATA
 // =============================================
 const TOPICS = [
@@ -913,6 +998,7 @@ let state = {
   lookupSecs: 0,
   lookupRunning: false,
   shuffledChoices: [],  // per question: array of {text, originalIndex}
+  selectedShuffledIndex: null,  // uncommitted selection
 };
 
 // =============================================
@@ -1002,9 +1088,13 @@ function renderQuestion() {
     btn.className = 'choice-btn';
     btn.innerHTML = `<span class="choice-label">${labels[i]}</span>${escHtml(choice.text)}`;
     btn.dataset.shuffledIndex = i;
-    btn.onclick = () => selectAnswer(i, btn);
+    btn.onclick = () => selectChoice(i, btn);
     choicesDiv.appendChild(btn);
   });
+
+  // Reset selection state
+  state.selectedShuffledIndex = null;
+  document.getElementById('submit-btn').classList.add('hidden');
 
   // Flag button state
   const flagBtn = document.getElementById('flag-btn');
@@ -1019,41 +1109,63 @@ function renderQuestion() {
   if(state.lookupTimer) { clearInterval(state.lookupTimer); state.lookupTimer=null; }
 }
 
-function selectAnswer(shuffledIndex, clickedBtn) {
+function selectChoice(shuffledIndex, clickedBtn) {
+  // Remove selected highlight from all choices
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected-choice'));
+  // Highlight this choice
+  clickedBtn.classList.add('selected-choice');
+  state.selectedShuffledIndex = shuffledIndex;
+  // Show the submit button
+  document.getElementById('submit-btn').classList.remove('hidden');
+}
+
+function submitAnswer() {
+  if(state.selectedShuffledIndex === null) return;
+  const shuffledIndex = state.selectedShuffledIndex;
   const q = state.questions[state.currentIndex];
   const choice = state.shuffledChoices[shuffledIndex];
   const correct = choice.originalIndex === q.answerIndex;
+  const clickedBtn = document.querySelectorAll('.choice-btn')[shuffledIndex];
 
-  // Disable all buttons
-  document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; });
+  // Lock all buttons and clear selection highlight
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    b.classList.remove('selected-choice');
+  });
+  document.getElementById('submit-btn').classList.add('hidden');
+  state.selectedShuffledIndex = null;
 
   if(state.mode === 'baseline') {
-    // Just record and move on
+    // Baseline: record, no feedback, show Next
     state.answers.push({qIndex: state.currentIndex, selectedOriginalIndex: choice.originalIndex, correct, lookupTime: null});
-    setTimeout(()=>nextQuestion(), 180);
+    document.getElementById('next-btn').classList.remove('hidden');
     return;
   }
 
-  // Open book or Lookup — show feedback
+  // Open book or Lookup — show feedback with Ugly's info
   clickedBtn.classList.add(correct ? 'correct' : 'wrong');
   if(!correct) {
-    // Highlight the correct answer
     const correctShuffledIdx = state.shuffledChoices.findIndex(c=>c.originalIndex===q.answerIndex);
     document.querySelectorAll('.choice-btn')[correctShuffledIdx].classList.add('correct');
   }
+
+  const uglysData = UGLYS[q.id] || {covered:false, note:'Not mapped yet.'};
+  const uglysHtml = `<div style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:0.82rem;">
+    <strong style="color:${uglysData.covered?'var(--green)':'var(--red)'}">Ugly's 2023:</strong> ${escHtml(uglysData.note)}
+  </div>`;
 
   const fb = document.getElementById('feedback');
   fb.classList.remove('hidden');
   fb.className = 'feedback-box ' + (correct ? 'correct-fb' : 'wrong-fb');
   fb.innerHTML = `<div class="fb-verdict ${correct?'fb-correct':'fb-wrong'}">${correct ? '✓ Correct!' : '✗ Incorrect'}</div>
     <div class="fb-explanation">${escHtml(q.explanation)}</div>
-    <div class="fb-ref">📖 ${escHtml(q.bookRef)}</div>
-    <div class="fb-location">📍 ${escHtml(q.bookLocation)}</div>`;
+    <div class="fb-ref">📖 <strong>Primary Book:</strong> ${escHtml(q.bookRef)}</div>
+    <div class="fb-location">📍 ${escHtml(q.bookLocation)}</div>
+    ${uglysHtml}`;
 
   state.answers.push({qIndex: state.currentIndex, selectedOriginalIndex: choice.originalIndex, correct, lookupTime: null});
 
   if(state.mode === 'lookup') {
-    // Show lookup timer
     const ltBox = document.getElementById('lookup-timer-box');
     ltBox.classList.remove('hidden');
     document.getElementById('lookup-clock').textContent = '0.0s';
@@ -1274,9 +1386,11 @@ document.addEventListener('keydown', e => {
 
   if(k === 'f') { flagQuestion(); return; }
 
-  if((k === 'enter' || k === ' ') && !document.getElementById('next-btn').classList.contains('hidden')) {
+  if(k === 'enter' || k === ' ') {
     e.preventDefault();
-    nextQuestion();
+    const submitBtn = document.getElementById('submit-btn');
+    if(!submitBtn.classList.contains('hidden')) { submitAnswer(); return; }
+    if(!document.getElementById('next-btn').classList.contains('hidden')) { nextQuestion(); return; }
     return;
   }
 
