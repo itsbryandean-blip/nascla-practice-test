@@ -1159,6 +1159,8 @@ function startExam() {
   state.questions = pool.slice(0, count);
   state.currentIndex = 0;
   state.answers = [];
+  state.bookIdResults = [];
+  state.bookIdPicked = false;
   state.flagged = new Set();
   state.elapsedSecs = 0;
   showScreen('question');
