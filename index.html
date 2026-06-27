@@ -984,90 +984,91 @@ const UGLYS = {
 // =============================================
 // BOOK NAMES + TAB REFERENCE SYSTEM
 // =============================================
-const BOOK_NAMES = {
-  B:"NEC 2026", O:"OSHA 1926", P:"NFPA 70E", Y:"NASCLA Guide", G:"Mike Holt Theory"
-};
-const BOOK_COLORS = {
-  B:"#3498db", O:"#e67e22", P:"#e74c3c", Y:"#f1c40f", G:"#2ecc71"
+// Tab route: book = which book, color = tab color within that book, tab = tab ID, label = keywords
+// Colors are used WITHIN each book to group topics — not to identify books (book name does that)
+const TAB_COLORS = {
+  GRN:"#2ecc71", BLU:"#3498db", YEL:"#f1c40f", ORG:"#e67e22", PUR:"#9b59b6", WHT:"#bdc3c7",
+  RED:"#e74c3c"  // Ugly's cross-reference
 };
 
-// Tab route: bCode=book letter, bTab=tab number, bLabel=tab name+keywords, uTab=Ugly's tab (optional)
 const TABREFS = {
-  1:  {bCode:"B",bTab:20,bLabel:"B-20 │ T250.122 — EGC size | equipment ground, AWG",         uTab:"U-7"},
-  2:  {bCode:"B",bTab:18,bLabel:"B-18 │ Art.250 — grounding & bonding definitions"},
-  3:  {bCode:"B",bTab:19,bLabel:"B-19 │ T250.66 — GEC size | service size, copper, AWG",        uTab:"U-7"},
-  4:  {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52 — grounding electrodes | rod, plate, rebar"},
-  5:  {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52(A)(1) — water pipe electrode"},
-  6:  {bCode:"B",bTab:22,bLabel:"B-22 │ 250.102 — bonding jumper | supply side"},
-  7:  {bCode:"B",bTab:18,bLabel:"B-18 │ 250.28 — main bonding jumper | neutral-to-ground"},
-  8:  {bCode:"B",bTab:20,bLabel:"B-20 │ T250.122 — EGC size | equipment ground, AWG",         uTab:"U-7"},
-  9:  {bCode:"B",bTab:5, bLabel:"B-5  │ 210.21 — outlet rating | 15A/20A circuit, receptacle"},
-  10: {bCode:"B",bTab:6, bLabel:"B-6  │ 210.8 — GFCI required | bathroom, garage, outdoor"},
-  11: {bCode:"B",bTab:11,bLabel:"B-11 │ 220.52(A) — small appliance | 1500VA, kitchen"},
-  12: {bCode:"B",bTab:5, bLabel:"B-5  │ 210.11(C)(1) — two 20A kitchen circuits required"},
-  13: {bCode:"B",bTab:6, bLabel:"B-6  │ 210.8 — GFCI required | bathroom, outdoor"},
-  14: {bCode:"B",bTab:15,bLabel:"B-15 │ 240.24(E) — OCPD not in bathrooms | location"},
-  15: {bCode:"B",bTab:10,bLabel:"B-10 │ T220.42 — demand factor | lighting, first 3000 sqft"},
-  16: {bCode:"B",bTab:9, bLabel:"B-9  │ T220.12 — unit load | 3 VA/sqft, general lighting"},
-  17: {bCode:"B",bTab:25,bLabel:"B-25 │ T310.16 — ampacity | THWN, 75°C, AWG",              uTab:"U-2"},
-  18: {bCode:"B",bTab:26,bLabel:"B-26 │ T310.15(C)(1) — derating | 4+ conductors, 80%",        uTab:"U-3"},
-  19: {bCode:"B",bTab:27,bLabel:"B-27 │ T300.5 — burial depth | PVC/RMC/UF underground",       uTab:"U-9"},
-  20: {bCode:"B",bTab:31,bLabel:"B-31 │ 358.26 — conduit bends | 360° max between pulls"},
-  21: {bCode:"B",bTab:32,bLabel:"B-32 │ Ch.9 T1 — conduit fill % | 40% for 3+ wires",          uTab:"U-4"},
-  22: {bCode:"B",bTab:23,bLabel:"B-23 │ 300.14 — free conductor | 6 in. at outlet/box"},
-  23: {bCode:"B",bTab:30,bLabel:"B-30 │ 334.10/12 — NM cable | where NOT permitted"},
-  24: {bCode:"B",bTab:35,bLabel:"B-35 │ Annex C — max conductors | EMT 3/4 in., AWG",          uTab:"U-4"},
-  25: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.22 — motor conductor | 125% FLC continuous"},
-  26: {bCode:"B",bTab:38,bLabel:"B-38 │ T430.250 — 3ph motor FLC | HP, 208/240/480V",          uTab:"U-6"},
-  27: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.32(A)(1) — motor overload | 140% FLC"},
-  28: {bCode:"B",bTab:39,bLabel:"B-39 │ T430.52 — motor OCPD | 250% inv.time, 300% dual"},
-  29: {bCode:"B",bTab:37,bLabel:"B-37 │ T430.248 — 1ph motor FLC | HP, 115/230V",              uTab:"U-5"},
-  30: {bCode:"B",bTab:3, bLabel:"B-3  │ T110.26(A)(1) — working clearance | 3ft Cond.1/2/3"},
-  31: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(B) — working space width | 30 in. minimum"},
-  32: {bCode:"B",bTab:16,bLabel:"B-16 │ 240.4(D) — small conductor | #14=15A #12=20A #10=30A", uTab:"U-10"},
-  33: {bCode:"B",bTab:14,bLabel:"B-14 │ 230.79(C) — service disconnect | 100A min 1-family"},
-  34: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(E) — headroom | 6½ ft above working space"},
-  35: {bCode:"B",bTab:17,bLabel:"B-17 │ 240.6(A) — standard OCPD sizes | 15,20,25,30,35,40...", uTab:"U-10"},
-  36: {bCode:"O",bTab:2, bLabel:"O-2  │ 1926.404/405 — GFCI | construction 15/20A receptacles"},
-  37: {bCode:"O",bTab:9, bLabel:"O-9  │ 1926.403 — electrical general | flexible cord, voltage"},
-  38: {bCode:"O",bTab:7, bLabel:"O-7  │ Subpart P — excavation | 5 ft shoring, cave-in"},
-  39: {bCode:"O",bTab:6, bLabel:"O-6  │ 1926.501 — fall protection | 6 ft, leading edge"},
-  40: {bCode:"O",bTab:5, bLabel:"O-5  │ Subpart L — scaffold | guardrail height, 10 ft"},
-  41: {bCode:"Y",bTab:2, bLabel:"Y-2  │ Contracts — lump sum/unit price/cost plus"},
-  42: {bCode:"Y",bTab:4, bLabel:"Y-4  │ Liens — mechanic's lien | notice, filing, time limit"},
-  43: {bCode:"Y",bTab:5, bLabel:"Y-5  │ Insurance — GL/workers comp/builder's risk"},
-  44: {bCode:"Y",bTab:8, bLabel:"Y-8  │ Scheduling — CPM | critical path, float, network"},
-  45: {bCode:"Y",bTab:7, bLabel:"Y-7  │ Financial — overhead | markup, profit, burden rate"},
-  46: {bCode:"Y",bTab:1, bLabel:"Y-1  │ Business structures — LLC/Corp/Partnership | liability"},
-  47: {bCode:"Y",bTab:3, bLabel:"Y-3  │ Change orders — scope change | COR, approval"},
-  48: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500 — hazardous | Class I/II/III, Division 1/2"},
-  49: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.517 — healthcare | patient care, essential electrical"},
-  50: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500 — Class II Div 1/2 | combustible dust, grain"},
-  51: {bCode:"G",bTab:1, bLabel:"G-1  │ Ohm's Law — I=V/R | volts, amps, ohms, resistance",     uTab:"U-1"},
-  52: {bCode:"G",bTab:1, bLabel:"G-1  │ Power formula — P=V×I | watts, single phase",           uTab:"U-1"},
-  53: {bCode:"G",bTab:3, bLabel:"G-3  │ 3ph power — P=V×I×1.732×PF | three phase kVA",        uTab:"U-1"},
-  54: {bCode:"G",bTab:4, bLabel:"G-4  │ Voltage drop — VD=2KIL/CM | circular mils, K factor",   uTab:"U-1"},
-  55: {bCode:"G",bTab:3, bLabel:"G-3  │ Power factor — PF=kW/kVA | real vs apparent power",     uTab:"U-1"},
-  56: {bCode:"G",bTab:2, bLabel:"G-2  │ Series circuit — RT=R1+R2 | voltage divides, same I",   uTab:"U-1"},
-  57: {bCode:"G",bTab:2, bLabel:"G-2  │ Parallel circuit — IT=I1+I2 | voltage same, I divides", uTab:"U-1"},
-  58: {bCode:"G",bTab:2, bLabel:"G-2  │ Impedance — Z=√(R²+XL²) | AC resistance, reactance",   uTab:"U-1"},
-  59: {bCode:"B",bTab:26,bLabel:"B-26 │ T310.15(C)(1) — derating | 4 conductors=80%, 5-6=80%",  uTab:"U-3"},
-  60: {bCode:"G",bTab:5, bLabel:"G-5  │ Transformer — I=kVA×1000/V | turns ratio, primary/sec",  uTab:"U-1"},
-  61: {bCode:"B",bTab:99,bLabel:"B-99 │ Annex D — VD recommendation | 3% branch, 5% total"},
-  62: {bCode:"P",bTab:4, bLabel:"P-4  │ Art.130 — energized work | arc flash boundary, PPE"},
-  63: {bCode:"P",bTab:1, bLabel:"P-1  │ Art.100 — definitions | arc flash, incident energy, PPE"},
-  64: {bCode:"P",bTab:4, bLabel:"P-4  │ Art.130 — energized work permit | when required"},
-  65: {bCode:"P",bTab:3, bLabel:"P-3  │ Art.120 — LOTO/ESWC | lockout tagout, de-energize"},
-  66: {bCode:"P",bTab:4, bLabel:"P-4  │ 130.5 — arc flash risk assessment | when required"},
-  67: {bCode:"P",bTab:5, bLabel:"P-5  │ T130.4 — approach boundaries | limited/restricted"},
-  68: {bCode:"B",bTab:25,bLabel:"B-25 │ T310.16 — ampacity | 8 AWG THHN, 75°C = 50A",          uTab:"U-2"},
-  69: {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52(A)(3) — concrete-encased electrode | 20 ft rebar"},
-  70: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(D) — illumination | required at service equip"},
-  71: {bCode:"B",bTab:7, bLabel:"B-7  │ 210.12(A) — AFCI | bedroom circuits, arc fault"},
-  72: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.24 — multiple motors | largest 125% + others 100%"},
-  73: {bCode:"B",bTab:29,bLabel:"B-29 │ T314.16(B) — box fill | volume per conductor, cubic in", uTab:"U-8"},
-  74: {bCode:"O",bTab:10,bLabel:"O-10 │ 1926.502(b)(1) — guardrail | 42 in. ±3 in. top rail"},
-  75: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500.5(B)(2) — Class I Div 2 | flammable vapor"}
+  // NEC — COLORS BY TOPIC WITHIN THE BOOK
+  // GRN=Grounding&Bonding  BLU=Conductors  YEL=Overcurrent  ORG=Load/Branch  PUR=Motors  WHT=General/Wiring/Boxes
+  1:  {book:"NEC", color:"GRN", tab:"G5", label:"G5 │ T250.122 — EGC size | equipment ground, AWG",        uTab:"U-7"},
+  2:  {book:"NEC", color:"GRN", tab:"G1", label:"G1 │ Art.250 — grounding & bonding (start of article)"},
+  3:  {book:"NEC", color:"GRN", tab:"G4", label:"G4 │ T250.66 — GEC size | service size, copper, AWG",      uTab:"U-7"},
+  4:  {book:"NEC", color:"GRN", tab:"G2", label:"G2 │ 250.52 — grounding electrodes | rod, rebar, water pipe"},
+  5:  {book:"NEC", color:"GRN", tab:"G2", label:"G2 │ 250.52(A)(1) — water pipe electrode"},
+  6:  {book:"NEC", color:"GRN", tab:"G3", label:"G3 │ 250.102 — bonding jumper | supply side"},
+  7:  {book:"NEC", color:"GRN", tab:"G3", label:"G3 │ 250.28 — main bonding jumper | neutral-to-ground"},
+  8:  {book:"NEC", color:"GRN", tab:"G5", label:"G5 │ T250.122 — EGC size | equipment ground, AWG",        uTab:"U-7"},
+  9:  {book:"NEC", color:"ORG", tab:"O1", label:"O1 │ 210.21 — outlet rating | 15A/20A circuit, receptacle"},
+  10: {book:"NEC", color:"ORG", tab:"O2", label:"O2 │ 210.8 — GFCI required | bathroom, garage, outdoor"},
+  11: {book:"NEC", color:"ORG", tab:"O6", label:"O6 │ 220.52(A) — small appliance | 1500VA, kitchen"},
+  12: {book:"NEC", color:"ORG", tab:"O1", label:"O1 │ 210.11(C)(1) — two 20A kitchen circuits required"},
+  13: {book:"NEC", color:"ORG", tab:"O2", label:"O2 │ 210.8 — GFCI required | bathroom, outdoor"},
+  14: {book:"NEC", color:"YEL", tab:"Y3", label:"Y3 │ 240.24(E) — OCPD location | NOT in bathrooms"},
+  15: {book:"NEC", color:"ORG", tab:"O5", label:"O5 │ T220.42 — demand factor | lighting, first 3000 sqft"},
+  16: {book:"NEC", color:"ORG", tab:"O4", label:"O4 │ T220.12 — unit load | 3 VA/sqft, general lighting"},
+  17: {book:"NEC", color:"BLU", tab:"B1", label:"B1 │ T310.16 — ampacity | THWN/THHN, 75°C, AWG ★dog-ear", uTab:"U-2"},
+  18: {book:"NEC", color:"BLU", tab:"B2", label:"B2 │ T310.15(C)(1) — derating | 4+ conductors = 80%",    uTab:"U-3"},
+  19: {book:"NEC", color:"BLU", tab:"B3", label:"B3 │ T300.5 — burial depth | PVC/RMC/UF underground",     uTab:"U-9"},
+  20: {book:"NEC", color:"WHT", tab:"W3", label:"W3 │ 358.26 — conduit bends | 360° max between pulls"},
+  21: {book:"NEC", color:"BLU", tab:"B4", label:"B4 │ Ch.9 T1 — conduit fill % | 40% for 3+ wires",        uTab:"U-4"},
+  22: {book:"NEC", color:"WHT", tab:"W3", label:"W3 │ 300.14 — free conductor | 6 in. at outlet/box"},
+  23: {book:"NEC", color:"WHT", tab:"W6", label:"W6 │ 334.10/12 — NM cable | where NOT permitted"},
+  24: {book:"NEC", color:"BLU", tab:"B5", label:"B5 │ Annex C — max conductors | EMT 3/4 in., AWG",        uTab:"U-4"},
+  25: {book:"NEC", color:"PUR", tab:"P1", label:"P1 │ 430.22 — motor conductor | 125% FLC continuous"},
+  26: {book:"NEC", color:"PUR", tab:"P3", label:"P3 │ T430.250 — 3ph motor FLC | HP, 208/240/480V",        uTab:"U-6"},
+  27: {book:"NEC", color:"PUR", tab:"P5", label:"P5 │ 430.32(A)(1) — motor overload | 140% FLC"},
+  28: {book:"NEC", color:"PUR", tab:"P4", label:"P4 │ T430.52 — motor OCPD | 250% inv.time, 300% dual"},
+  29: {book:"NEC", color:"PUR", tab:"P2", label:"P2 │ T430.248 — 1ph motor FLC | HP, 115/230V",            uTab:"U-5"},
+  30: {book:"NEC", color:"WHT", tab:"W2", label:"W2 │ T110.26(A)(1) — working clearance | 3ft Cond.1/2/3"},
+  31: {book:"NEC", color:"WHT", tab:"W1", label:"W1 │ 110.26(B)/(E) — working space width + headroom"},
+  32: {book:"NEC", color:"YEL", tab:"Y1", label:"Y1 │ 240.4(D) — small conductor | #14=15A #12=20A #10=30A", uTab:"U-10"},
+  33: {book:"NEC", color:"WHT", tab:"W7", label:"W7 │ 230.79(C) — service disconnect | 100A min 1-family"},
+  34: {book:"NEC", color:"WHT", tab:"W1", label:"W1 │ 110.26(E) — headroom | 6½ ft above working space"},
+  35: {book:"NEC", color:"YEL", tab:"Y2", label:"Y2 │ 240.6(A) — standard OCPD sizes | 15,20,25,30,35,40...", uTab:"U-10"},
+  36: {book:"OSHA", color:"ORG", tab:"1",  label:"OSHA-1 │ 1926.404/405 — GFCI | 15/20A 125V construction"},
+  37: {book:"OSHA", color:"ORG", tab:"1",  label:"OSHA-1 │ 1926.403 — electrical | flexible cord, voltage"},
+  38: {book:"OSHA", color:"ORG", tab:"4",  label:"OSHA-4 │ Subpart P — excavation | 5 ft shoring, cave-in"},
+  39: {book:"OSHA", color:"ORG", tab:"3",  label:"OSHA-3 │ 1926.501 — fall protection | 6 ft trigger"},
+  40: {book:"OSHA", color:"ORG", tab:"2",  label:"OSHA-2 │ Subpart L — scaffold | 10 ft, guardrail"},
+  41: {book:"NASCLA", color:"YEL", tab:"2", label:"NASCLA-2 │ Contracts — lump sum/unit price/cost plus"},
+  42: {book:"NASCLA", color:"YEL", tab:"4", label:"NASCLA-4 │ Liens — mechanic's lien | notice, filing"},
+  43: {book:"NASCLA", color:"YEL", tab:"5", label:"NASCLA-5 │ Insurance — GL/workers comp/builder's risk"},
+  44: {book:"NASCLA", color:"YEL", tab:"8", label:"NASCLA-8 │ Scheduling — CPM | critical path, float"},
+  45: {book:"NASCLA", color:"YEL", tab:"7", label:"NASCLA-7 │ Financial — overhead | markup, profit"},
+  46: {book:"NASCLA", color:"YEL", tab:"1", label:"NASCLA-1 │ Business structures — LLC/Corp/Partnership"},
+  47: {book:"NASCLA", color:"YEL", tab:"3", label:"NASCLA-3 │ Change orders — scope change | COR, extra work"},
+  48: {book:"NEC", color:"WHT", tab:"W8", label:"W8 │ Art.500 — hazardous | Class I/II/III, Division 1/2"},
+  49: {book:"NEC", color:"WHT", tab:"W8", label:"W8 │ Art.517 — healthcare | patient care, essential elec."},
+  50: {book:"NEC", color:"WHT", tab:"W8", label:"W8 │ Art.500 — Class II Div 1/2 | combustible dust"},
+  51: {book:"THEORY", color:"GRN", tab:"T1", label:"T1 │ Ohm's Law — I=V/R | volts, amps, ohms",            uTab:"U-1"},
+  52: {book:"THEORY", color:"GRN", tab:"T1", label:"T1 │ Power formula — P=V×I | watts, single phase",       uTab:"U-1"},
+  53: {book:"THEORY", color:"GRN", tab:"T3", label:"T3 │ 3ph power — P=V×I×1.732×PF | three phase kVA",    uTab:"U-1"},
+  54: {book:"THEORY", color:"GRN", tab:"T4", label:"T4 │ Voltage drop — VD=2KIL/CM | circular mils",         uTab:"U-1"},
+  55: {book:"THEORY", color:"GRN", tab:"T3", label:"T3 │ Power factor — PF=kW/kVA | real vs apparent",       uTab:"U-1"},
+  56: {book:"THEORY", color:"GRN", tab:"T2", label:"T2 │ Series circuit — RT=R1+R2 | same current",          uTab:"U-1"},
+  57: {book:"THEORY", color:"GRN", tab:"T2", label:"T2 │ Parallel circuit — IT=I1+I2 | same voltage",        uTab:"U-1"},
+  58: {book:"THEORY", color:"GRN", tab:"T2", label:"T2 │ Impedance — Z=√(R²+XL²) | reactance",             uTab:"U-1"},
+  59: {book:"NEC", color:"BLU", tab:"B2", label:"B2 │ T310.15(C)(1) — derating | 4 conductors = 80%",       uTab:"U-3"},
+  60: {book:"THEORY", color:"GRN", tab:"T5", label:"T5 │ Transformer — I=kVA×1000/V | turns ratio",          uTab:"U-1"},
+  61: {book:"NEC", color:"WHT", tab:"W9", label:"W9 │ Annex D — VD recommendation | 3% branch, 5% total"},
+  62: {book:"70E",  color:"RED", tab:"3",  label:"70E-3 │ Art.130 — energized work | arc flash, PPE req'd"},
+  63: {book:"70E",  color:"RED", tab:"1",  label:"70E-1 │ Art.100 — definitions | arc flash, incident energy"},
+  64: {book:"70E",  color:"RED", tab:"3",  label:"70E-3 │ Art.130 — energized work permit | when required"},
+  65: {book:"70E",  color:"RED", tab:"2",  label:"70E-2 │ Art.120 — LOTO/ESWC | lockout tagout"},
+  66: {book:"70E",  color:"RED", tab:"3",  label:"70E-3 │ 130.5 — arc flash risk assessment | when required"},
+  67: {book:"70E",  color:"RED", tab:"4",  label:"70E-4 │ T130.4 — approach boundaries | limited/restricted"},
+  68: {book:"NEC", color:"BLU", tab:"B1", label:"B1 │ T310.16 — ampacity | 8 AWG THHN, 75°C = 50A",        uTab:"U-2"},
+  69: {book:"NEC", color:"GRN", tab:"G2", label:"G2 │ 250.52(A)(3) — concrete-encased electrode | 20ft rebar"},
+  70: {book:"NEC", color:"WHT", tab:"W1", label:"W1 │ 110.26(D) — illumination | required at service equip"},
+  71: {book:"NEC", color:"ORG", tab:"O3", label:"O3 │ 210.12(A) — AFCI | bedroom circuits, arc fault"},
+  72: {book:"NEC", color:"PUR", tab:"P1", label:"P1 │ 430.24 — multiple motors | largest 125% + others 100%"},
+  73: {book:"NEC", color:"WHT", tab:"W4", label:"W4 │ T314.16(B) — box fill | volume per conductor, cu.in.",  uTab:"U-8"},
+  74: {book:"OSHA", color:"ORG", tab:"3",  label:"OSHA-3 │ 1926.502(b)(1) — guardrail | 42 in. ±3 in."},
+  75: {book:"NEC", color:"WHT", tab:"W8", label:"W8 │ Art.500.5(B)(2) — Class I Div 2 | flammable vapor"}
 };
 
 // =============================================
@@ -1212,12 +1213,12 @@ function renderQuestion() {
     bookPanel.innerHTML = `
       <div style="margin-bottom:10px;font-size:0.82rem;color:var(--gold);font-weight:700;">🎯 Which book has the answer?</div>
       <div class="book-btn-grid">
-        <button class="book-btn bb-nec"  onclick="bookIdSelect('B')">📘 NEC 2026</button>
-        <button class="book-btn bb-osha" onclick="bookIdSelect('O')">🟠 OSHA 1926</button>
-        <button class="book-btn bb-e70"  onclick="bookIdSelect('P')">🔴 NFPA 70E</button>
-        <button class="book-btn bb-nasc" onclick="bookIdSelect('Y')">🟡 NASCLA Guide</button>
-        <button class="book-btn bb-theory" onclick="bookIdSelect('G')">🟢 Mike Holt Theory</button>
-        <button class="book-btn bb-ugly" onclick="bookIdSelect('U')">🟣 Ugly's Only</button>
+        <button class="book-btn bb-nec"    onclick="bookIdSelect('NEC')">📘 NEC 2026</button>
+        <button class="book-btn bb-osha"   onclick="bookIdSelect('OSHA')">🟠 OSHA 1926</button>
+        <button class="book-btn bb-e70"    onclick="bookIdSelect('70E')">🔴 NFPA 70E</button>
+        <button class="book-btn bb-nasc"   onclick="bookIdSelect('NASCLA')">🟡 NASCLA Guide</button>
+        <button class="book-btn bb-theory" onclick="bookIdSelect('THEORY')">🟢 Mike Holt Theory</button>
+        <button class="book-btn bb-ugly"   onclick="bookIdSelect('UGLY')">🟣 Ugly's Only</button>
       </div>`;
     document.getElementById('choices').classList.add('hidden');
   } else {
@@ -1238,16 +1239,16 @@ function renderQuestion() {
   if(state.lookupTimer) { clearInterval(state.lookupTimer); state.lookupTimer=null; }
 }
 
-function bookIdSelect(selectedCode) {
+function bookIdSelect(selectedBook) {
   if(state.bookIdPicked) return;
   state.bookIdPicked = true;
   const q = state.questions[state.currentIndex];
   const ref = TABREFS[q.id];
-  const correct = ref && selectedCode === ref.bCode;
-  const correctBook = ref ? (BOOK_NAMES[ref.bCode] || ref.bCode) : '?';
-  const correctColor = ref ? (BOOK_COLORS[ref.bCode] || '#fff') : '#fff';
+  const correct = ref && selectedBook === ref.book;
+  const correctBook = ref ? ref.book : '?';
+  const correctColor = ref ? (TAB_COLORS[ref.color] || '#fff') : '#fff';
 
-  state.bookIdResults.push({qIndex: state.currentIndex, selectedCode, correct});
+  state.bookIdResults.push({qIndex: state.currentIndex, selectedBook, correct});
 
   const panel = document.getElementById('book-id-panel');
   panel.innerHTML = `
@@ -1309,8 +1310,9 @@ function submitAnswer() {
   </div>`;
 
   const tabRef = TABREFS[q.id];
-  const tabHtml = tabRef ? `<div style="margin-top:8px;padding:8px 12px;background:rgba(0,0,0,0.25);border-radius:6px;font-size:0.82rem;border-left:3px solid ${BOOK_COLORS[tabRef.bCode]||'var(--gold)'}">
-    <strong style="color:${BOOK_COLORS[tabRef.bCode]||'var(--gold)'}">📌 Tab route:</strong> ${escHtml(tabRef.bLabel)}
+  const tColor = tabRef ? (TAB_COLORS[tabRef.color] || 'var(--gold)') : 'var(--gold)';
+  const tabHtml = tabRef ? `<div style="margin-top:8px;padding:8px 12px;background:rgba(0,0,0,0.25);border-radius:6px;font-size:0.82rem;border-left:3px solid ${tColor}">
+    <strong style="color:${tColor}">📌 ${escHtml(tabRef.book)} → Tab</strong> ${escHtml(tabRef.label)}
     ${tabRef.uTab ? `<span style="color:#9b59b6"> • Ugly's: <strong>${tabRef.uTab}</strong></span>` : ''}
   </div>` : '';
 
