@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASCLA Exam — Tab Label Reference | Drew | June 30, 2026</title>
+<style>
+  :root {
+    --q: #1a56cc;
+    --a: #c0152a;
+    --q-bg: #e8f0fd;
+    --a-bg: #fdeaea;
+    --header-bg: #1a1a2e;
+    --section-colors: #1a56cc, #c0152a, #e07b00, #1a7a3c, #7b1fa2, #00695c, #4a4a00, #333;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; background: #f5f5f5; color: #111; }
+
+  /* PRINT BUTTON */
+  #print-btn {
+    position: fixed; top: 12px; right: 16px; z-index: 999;
+    background: #1a56cc; color: #fff; border: none; padding: 10px 20px;
+    border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  #print-btn:hover { background: #1343a8; }
+
+  /* PAGE HEADER */
+  .page-header {
+    background: var(--header-bg); color: #fff; padding: 14px 20px 10px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 3px solid #c0152a;
+  }
+  .page-header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+  .page-header .meta { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
+  .color-key {
+    display: flex; gap: 18px; padding: 6px 20px;
+    background: #fff; border-bottom: 1px solid #ddd; font-size: 11px; font-weight: 600;
+  }
+  .color-key span { display: flex; align-items: center; gap: 5px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+
+  /* LAYOUT */
+  .page-body { padding: 10px 14px; }
+
+  /* BOOK SECTIONS */
+  .book-section { margin-bottom: 14px; break-inside: avoid-page; }
+  .book-title {
+    font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+    padding: 5px 10px; color: #fff; border-radius: 4px 4px 0 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .book-title .book-emoji { font-size: 14px; }
+
+  /* COLOR PER BOOK */
+  .nec .book-title       { background: #1a3a6e; }
+  .uglys .book-title     { background: #8b0000; }
+  .osha .book-title      { background: #b34700; }
+  .nfpa .book-title      { background: #4a0070; }
+  .nascla .book-title    { background: #005a8e; }
+  .pmbok .book-title     { background: #1a5e2a; }
+  .ashrae .book-title    { background: #3d3d00; }
+  .holt .book-title      { background: #1a4a4a; }
+
+  /* TAB GRID */
+  .tab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 6px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
+
+  /* TAB CARD */
+  .tab-card {
+    border: 1px solid #ddd; border-radius: 5px; overflow: hidden;
+    break-inside: avoid;
+  }
+  .tab-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px; background: #f0f0f0; border-bottom: 1px solid #ddd;
+  }
+  .tab-id {
+    font-weight: 800; font-size: 12px; min-width: 40px;
+    background: #222; color: #fff; padding: 2px 6px; border-radius: 3px;
+    text-align: center; letter-spacing: 0.5px;
+  }
+  .tab-name { font-size: 10px; font-weight: 600; color: #333; line-height: 1.3; }
+  .tab-ref { font-size: 9px; color: #777; font-style: italic; }
+
+  .tab-body { padding: 5px 8px 6px; }
+  .kw-row { margin-bottom: 3px; line-height: 1.5; }
+  .kw-label {
+    display: inline-block; font-size: 9px; font-weight: 800;
+    width: 14px; text-align: center; border-radius: 2px;
+    padding: 0 2px; margin-right: 3px; vertical-align: middle;
+  }
+  .kw-q { background: var(--q-bg); color: var(--q); }
+  .kw-a { background: var(--a-bg); color: var(--a); }
+
+  .kw-chip {
+    display: inline-block; border-radius: 3px; padding: 1px 5px;
+    font-size: 10px; font-weight: 600; margin: 1px 2px 1px 0;
+    vertical-align: middle;
+  }
+  .q-chip { background: var(--q-bg); color: var(--q); border: 1px solid #b3c9f8; }
+  .a-chip { background: var(--a-bg); color: var(--a); border: 1px solid #f5b3bb; }
+
+  /* PINK MEMORIZE SECTION */
+  .pink-section {
+    background: #fff0f5; border: 2px solid #e91e8c; border-radius: 6px;
+    padding: 10px 14px; margin-bottom: 14px;
+  }
+  .pink-section h2 {
+    color: #c0006a; font-size: 13px; font-weight: 800; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .pink-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .pink-group h3 { font-size: 11px; font-weight: 700; color: #7a0040; margin-bottom: 4px; }
+  .pink-item { font-size: 10px; line-height: 1.7; }
+  .pink-val { font-weight: 800; color: #c0006a; }
+
+  /* PRINT STYLES */
+  @media print {
+    #print-btn { display: none; }
+    body { background: #fff; font-size: 9.5px; }
+    .page-header { padding: 8px 14px; }
+    .page-header h1 { font-size: 14px; }
+    .tab-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; padding: 5px; }
+    .page-body { padding: 6px 10px; }
+    .book-section { margin-bottom: 8px; }
+    .pink-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .tab-card { break-inside: avoid; }
+    .book-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<button id="print-btn" onclick="window.print()">🖨️ Print</button>
+
+<div class="page-header">
+  <div>
+    <h1>NASCLA ELECTRICAL EXAM — TAB LABEL REFERENCE</h1>
+    <div style="font-size:10px;color:#aaa;margin-top:3px;">Drew | Exam: June 30, 2026 &nbsp;|&nbsp; Blue pen = Q keywords &nbsp;|&nbsp; Red pen = A keywords/values</div>
+  </div>
+  <div class="meta">All 10 books covered<br>NEC 2026 corrected<br>Art. 120 = Load Calcs</div>
+</div>
+
+<div class="color-key">
+  <span><span class="swatch" style="background:var(--q-bg);border:1px solid var(--q)"></span> <span style="color:var(--q)">Q: Question keywords</span> — write in <strong style="color:var(--q)">BLUE pen</strong></span>
+  <span><span class="swatch" style="background:var(--a-bg);border:1px solid var(--a)"></span> <span style="color:var(--a)">A: Answer keywords/values</span> — write in <strong style="color:var(--a)">RED pen</strong></span>
+</div>
+
+<div class="page-body">
+
+<!-- COLOR LEGEND -->
+<div style="background:#fff;border:2px solid #1a1a2e;border-radius:6px;padding:10px 14px;margin-bottom:12px;">
+  <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1a1a2e;margin-bottom:7px;">🎨 Color → Book/Subject Map — Quiz Buttons Match These Labels</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:10px;font-weight:700;">
+    <span style="background:#1a7a3c;color:#fff;padding:3px 10px;border-radius:4px;">Green — Grounding</span>
+    <span style="background:#1a56cc;color:#fff;padding:3px 10px;border-radius:4px;">Blue — Conductors</span>
+    <span style="background:#b8860b;color:#fff;padding:3px 10px;border-radius:4px;">Yellow — OCP</span>
+    <span style="background:#e07b00;color:#fff;padding:3px 10px;border-radius:4px;">Orange — Load Calcs</span>
+    <span style="background:#6a1b9a;color:#fff;padding:3px 10px;border-radius:4px;">Purple — Motors/AC</span>
+    <span style="background:#555;color:#fff;padding:3px 10px;border-radius:4px;">White — Wiring/Boxes</span>
+    <span style="background:#222;color:#fff;padding:3px 10px;border-radius:4px;">Black — OSHA</span>
+    <span style="background:#c0152a;color:#fff;padding:3px 10px;border-radius:4px;">Red — NFPA 70E</span>
+    <span style="background:#b8960a;color:#fff;padding:3px 10px;border-radius:4px;">Gold — NASCLA</span>
+    <span style="background:#888;color:#fff;padding:3px 10px;border-radius:4px;">Gray — PMBOK</span>
+    <span style="background:#008b8b;color:#fff;padding:3px 10px;border-radius:4px;">Teal — ASHRAE</span>
+    <span style="background:#1a4a4a;color:#fff;padding:3px 10px;border-radius:4px;">Dk.Green — Holt Theory</span>
+    <span style="background:#e91e8c;color:#fff;padding:3px 10px;border-radius:4px;">Pink — Know It (Memorized)</span>
+  </div>
+</div>
+
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- NEC 2026 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section nec">
+  <div class="book-title"><span class="book-emoji">📘</span> NEC 2026 — National Electrical Code &nbsp;<span style="font-size:10px;font-weight:400;opacity:0.8">(Art. 120 = Load Calcs — was Art. 220)</span></div>
+  <div class="tab-grid">
+
+    <!-- GREEN GROUNDING -->
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G1</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | Bond / Purpose</div><div class="tab-ref">250.4(A)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">purpose</span><span class="kw-chip q-chip">why ground</span><span class="kw-chip q-chip">limit voltage</span><span class="kw-chip q-chip">lightning</span><span class="kw-chip q-chip">fault path</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">low impedance</span><span class="kw-chip a-chip">facilitate OCPD</span><span class="kw-chip a-chip">lightning</span><span class="kw-chip a-chip">line surges</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G2</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | Bond Electrodes</div><div class="tab-ref">250.50</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">all electrodes</span><span class="kw-chip q-chip">present</span><span class="kw-chip q-chip">must be</span><span class="kw-chip q-chip">bonded</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">all</span><span class="kw-chip a-chip">bonded together</span><span class="kw-chip a-chip">grounding electrode system</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G3</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | GEC Protect</div><div class="tab-ref">250.64(B)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">GEC</span><span class="kw-chip q-chip">exposed</span><span class="kw-chip q-chip">physical damage</span><span class="kw-chip q-chip">surface</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">6 AWG</span><span class="kw-chip a-chip">raceway</span><span class="kw-chip a-chip">conduit</span><span class="kw-chip a-chip">armor</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G4</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | GEC Size</div><div class="tab-ref">Table 250.66 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">GEC size</span><span class="kw-chip q-chip">service conductor</span><span class="kw-chip q-chip">how large GEC</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">4 AWG</span><span class="kw-chip a-chip">2 AWG</span><span class="kw-chip a-chip">1/0</span><span class="kw-chip a-chip">2/0</span><span class="kw-chip a-chip">Table 250.66</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G5</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | EGC Size</div><div class="tab-ref">Table 250.122 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">EGC size</span><span class="kw-chip q-chip">equipment grounding</span><span class="kw-chip q-chip">OCPD</span><span class="kw-chip q-chip">breaker rating</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">14 AWG</span><span class="kw-chip a-chip">10 AWG</span><span class="kw-chip a-chip">8 AWG</span><span class="kw-chip a-chip">4 AWG</span><span class="kw-chip a-chip">1/0</span><span class="kw-chip a-chip">Table 250.122</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a7a3c">G6</div><div><div class="tab-name"><span style="color:#1a7a3c;font-weight:700">Green — Grounding</span> | Main Bond Jumper</div><div class="tab-ref">250.28</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">MBJ</span><span class="kw-chip q-chip">main bonding jumper</span><span class="kw-chip q-chip">neutral</span><span class="kw-chip q-chip">service panel</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">wire</span><span class="kw-chip a-chip">bus</span><span class="kw-chip a-chip">screw</span><span class="kw-chip a-chip">Table 250.66</span><span class="kw-chip a-chip">250.28</span></div>
+      </div>
+    </div>
+
+    <!-- BLUE CONDUCTORS -->
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a56cc">B1</div><div><div class="tab-name"><span style="color:#1a56cc;font-weight:700">Blue — Conductors</span> | Ampacity</div><div class="tab-ref">Table 310.16 ⭐ DOG-EAR</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">ampacity</span><span class="kw-chip q-chip">AWG</span><span class="kw-chip q-chip">THHN</span><span class="kw-chip q-chip">THWN</span><span class="kw-chip q-chip">copper</span><span class="kw-chip q-chip">how many amps</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">20A</span><span class="kw-chip a-chip">25A</span><span class="kw-chip a-chip">30A</span><span class="kw-chip a-chip">35A</span><span class="kw-chip a-chip">50A</span><span class="kw-chip a-chip">65A</span><span class="kw-chip a-chip">75A</span><span class="kw-chip a-chip">95A</span><span class="kw-chip a-chip">115A</span><span class="kw-chip a-chip">150A</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a56cc">B2</div><div><div class="tab-name"><span style="color:#1a56cc;font-weight:700">Blue — Conductors</span> | Temp Correction</div><div class="tab-ref">Table 310.15(B)(1)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">correction factor</span><span class="kw-chip q-chip">ambient</span><span class="kw-chip q-chip">temperature</span><span class="kw-chip q-chip">°C</span><span class="kw-chip q-chip">hot location</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">0.82</span><span class="kw-chip a-chip">0.87</span><span class="kw-chip a-chip">0.91</span><span class="kw-chip a-chip">0.96</span><span class="kw-chip a-chip">multiply</span><span class="kw-chip a-chip">factor</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a56cc">B3</div><div><div class="tab-name"><span style="color:#1a56cc;font-weight:700">Blue — Conductors</span> | Derating &gt;3 Cond.</div><div class="tab-ref">Table 310.15(C)(1)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">more than 3</span><span class="kw-chip q-chip">conduit</span><span class="kw-chip q-chip">raceway</span><span class="kw-chip q-chip">adjustment</span><span class="kw-chip q-chip">derating</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">80%</span><span class="kw-chip a-chip">65%</span><span class="kw-chip a-chip">50%</span><span class="kw-chip a-chip">40%</span><span class="kw-chip a-chip">multiply</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a56cc">B4</div><div><div class="tab-name"><span style="color:#1a56cc;font-weight:700">Blue — Conductors</span> | Equip Temp Limit</div><div class="tab-ref">110.14(C)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">terminal</span><span class="kw-chip q-chip">lug</span><span class="kw-chip q-chip">equipment rated</span><span class="kw-chip q-chip">which column</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">60°C column</span><span class="kw-chip a-chip">75°C column</span><span class="kw-chip a-chip">use lower</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#1a56cc">B5</div><div><div class="tab-name"><span style="color:#1a56cc;font-weight:700">Blue — Conductors</span> | Insulation / Min Size</div><div class="tab-ref">310.5(A) ← NEC 2026</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">THHN</span><span class="kw-chip q-chip">THWN</span><span class="kw-chip q-chip">minimum size</span><span class="kw-chip q-chip">wet/dry</span><span class="kw-chip q-chip">insulation type</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">90°C</span><span class="kw-chip a-chip">75°C</span><span class="kw-chip a-chip">16 AWG min</span><span class="kw-chip a-chip">310.5(A)</span></div>
+      </div>
+    </div>
+
+    <!-- YELLOW OCP -->
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#b8860b">Y1</div><div><div class="tab-name"><span style="color:#b8860b;font-weight:700">Yellow — OCP</span> | Small Conductor Limits</div><div class="tab-ref">240.4(D) ⭐ KNOW COLD</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">14 AWG</span><span class="kw-chip q-chip">12 AWG</span><span class="kw-chip q-chip">10 AWG</span><span class="kw-chip q-chip">maximum OCPD</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">15A</span><span class="kw-chip a-chip">20A</span><span class="kw-chip a-chip">30A</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#b8860b">Y2</div><div><div class="tab-name"><span style="color:#b8860b;font-weight:700">Yellow — OCP</span> | Standard OCPD Sizes</div><div class="tab-ref">240.6(A) ⭐ KNOW COLD</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">standard size</span><span class="kw-chip q-chip">next higher</span><span class="kw-chip q-chip">available rating</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">15</span><span class="kw-chip a-chip">20</span><span class="kw-chip a-chip">25</span><span class="kw-chip a-chip">30</span><span class="kw-chip a-chip">35</span><span class="kw-chip a-chip">40</span><span class="kw-chip a-chip">45</span><span class="kw-chip a-chip">50</span><span class="kw-chip a-chip">60</span><span class="kw-chip a-chip">70</span><span class="kw-chip a-chip">80</span><span class="kw-chip a-chip">90</span><span class="kw-chip a-chip">100</span><span class="kw-chip a-chip">125</span><span class="kw-chip a-chip">150</span><span class="kw-chip a-chip">175</span><span class="kw-chip a-chip">200</span><span class="kw-chip a-chip">225</span><span class="kw-chip a-chip">250</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#b8860b">Y3</div><div><div class="tab-name"><span style="color:#b8860b;font-weight:700">Yellow — OCP</span> | Tap Rules</div><div class="tab-ref">240.21</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">tap</span><span class="kw-chip q-chip">10 foot</span><span class="kw-chip q-chip">25 foot</span><span class="kw-chip q-chip">feeder tap</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">1/10</span><span class="kw-chip a-chip">1/3</span><span class="kw-chip a-chip">10 ft</span><span class="kw-chip a-chip">25 ft</span></div>
+      </div>
+    </div>
+
+    <!-- ORANGE LOAD CALCS -->
+    <div class="tab-card" style="border-color:#e07b00">
+      <div class="tab-header" style="background:#fff3e0"><div class="tab-id" style="background:#e07b00">O1</div><div><div class="tab-name">VA per sq ft</div><div class="tab-ref" style="color:#c05000;font-weight:700">120.14(J) ← NOT 220! NEC 2026</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">VA per sq ft</span><span class="kw-chip q-chip">floor area</span><span class="kw-chip q-chip">lighting load</span><span class="kw-chip q-chip">dwelling</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip" style="font-weight:800;background:#ffcccc">2 VA/ft²</span><span style="font-size:9px;color:#c05000;font-weight:700"> ← NOT 3 (old NEC trap)</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#e07b00">O2</div><div><div class="tab-name"><span style="color:#e07b00;font-weight:700">Orange — Load Calcs</span> | Demand Factors</div><div class="tab-ref">Table 120.42 ← NOT 220.42</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">demand factor</span><span class="kw-chip q-chip">lighting load</span><span class="kw-chip q-chip">total VA</span><span class="kw-chip q-chip">percent</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">100%</span><span class="kw-chip a-chip">35%</span><span class="kw-chip a-chip">25%</span><span class="kw-chip a-chip">3,000 VA</span><span class="kw-chip a-chip">117,000 VA</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#e07b00">O3</div><div><div class="tab-name"><span style="color:#e07b00;font-weight:700">Orange — Load Calcs</span> | Small Appl / Laundry</div><div class="tab-ref">120.52 ← NOT 220.52</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">small appliance</span><span class="kw-chip q-chip">laundry</span><span class="kw-chip q-chip">minimum circuits</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">1,500 VA</span><span class="kw-chip a-chip">2 circuits</span><span class="kw-chip a-chip">3,000 VA</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#e07b00">O4</div><div><div class="tab-name"><span style="color:#e07b00;font-weight:700">Orange — Load Calcs</span> | Range Demand</div><div class="tab-ref">Table 120.55 ← NOT 220.55</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">range</span><span class="kw-chip q-chip">demand</span><span class="kw-chip q-chip">kW</span><span class="kw-chip q-chip">cooking</span><span class="kw-chip q-chip">oven</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">8 kW</span><span class="kw-chip a-chip">Column C</span><span class="kw-chip a-chip">kW demand</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#e07b00">O5</div><div><div class="tab-name"><span style="color:#e07b00;font-weight:700">Orange — Load Calcs</span> | Neutral Reduction</div><div class="tab-ref">120.61 ← NOT 220.61</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">neutral</span><span class="kw-chip q-chip">reduce</span><span class="kw-chip q-chip">200A</span><span class="kw-chip q-chip">feeder neutral</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">70%</span><span class="kw-chip a-chip">above 200A</span></div>
+      </div>
+    </div>
+
+    <!-- PURPLE MOTORS -->
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P1</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | 3-Phase FLC</div><div class="tab-ref">Table 430.250 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">3-phase</span><span class="kw-chip q-chip">motor HP</span><span class="kw-chip q-chip">460V</span><span class="kw-chip q-chip">230V</span><span class="kw-chip q-chip">FLC</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">7.6A</span><span class="kw-chip a-chip">14A</span><span class="kw-chip a-chip">21A</span><span class="kw-chip a-chip">27A</span><span class="kw-chip a-chip">34A</span><span class="kw-chip a-chip">40A</span><span class="kw-chip a-chip">52A</span><span class="kw-chip a-chip">65A</span><span class="kw-chip a-chip">80A</span><span class="kw-chip a-chip">96A</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P2</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | Single-Phase FLC</div><div class="tab-ref">Table 430.248 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">single phase</span><span class="kw-chip q-chip">1-phase</span><span class="kw-chip q-chip">motor HP</span><span class="kw-chip q-chip">115V</span><span class="kw-chip q-chip">230V</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">3.8A</span><span class="kw-chip a-chip">7.2A</span><span class="kw-chip a-chip">8A</span><span class="kw-chip a-chip">9.8A</span><span class="kw-chip a-chip">12A</span><span class="kw-chip a-chip">16A</span><span class="kw-chip a-chip">20A</span><span class="kw-chip a-chip">24A</span><span class="kw-chip a-chip">28A</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P3</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | Motor Conductor</div><div class="tab-ref">430.22</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">motor conductor</span><span class="kw-chip q-chip">branch circuit wire</span><span class="kw-chip q-chip">minimum ampacity</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">125%</span><span class="kw-chip a-chip">× FLC</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P4</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | Motor OCPD</div><div class="tab-ref">Table 430.52 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">motor breaker</span><span class="kw-chip q-chip">motor fuse</span><span class="kw-chip q-chip">maximum OCPD</span><span class="kw-chip q-chip">inverse time</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">250%</span><span class="kw-chip a-chip">175%</span><span class="kw-chip a-chip">× FLC</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P5</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | A/C OCPD (MOP)</div><div class="tab-ref">440.22</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">A/C</span><span class="kw-chip q-chip">maximum breaker</span><span class="kw-chip q-chip">MOCP</span><span class="kw-chip q-chip">MOP</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">MOCP</span><span class="kw-chip a-chip">nameplate</span><span class="kw-chip a-chip">maximum</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#6a1b9a">P6</div><div><div class="tab-name"><span style="color:#6a1b9a;font-weight:700">Purple — Motors/AC</span> | A/C Conductor (MCA)</div><div class="tab-ref">440.32/35</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">A/C conductor</span><span class="kw-chip q-chip">MCA</span><span class="kw-chip q-chip">minimum circuit ampacity</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">MCA</span><span class="kw-chip a-chip">nameplate</span><span class="kw-chip a-chip">not less than</span></div>
+      </div>
+    </div>
+
+    <!-- WHITE WIRING -->
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W1</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Box Fill Volumes</div><div class="tab-ref">Table 314.16(B) ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">box fill</span><span class="kw-chip q-chip">volume</span><span class="kw-chip q-chip">cubic inches</span><span class="kw-chip q-chip">in³</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">2.0</span><span class="kw-chip a-chip">2.25</span><span class="kw-chip a-chip">2.5</span><span class="kw-chip a-chip">3.0</span><span class="kw-chip a-chip">in³</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W2</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Box Fill Calc</div><div class="tab-ref">314.16(B)</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">minimum volume</span><span class="kw-chip q-chip">device</span><span class="kw-chip q-chip">clamp</span><span class="kw-chip q-chip">switch</span><span class="kw-chip q-chip">total</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">device=2×</span><span class="kw-chip a-chip">clamp=1×</span><span class="kw-chip a-chip">EGC=1×</span><span class="kw-chip a-chip">in³</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W3</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Conduit Fill %</div><div class="tab-ref">Ch.9 Table 1 ⭐</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">conduit fill</span><span class="kw-chip q-chip">percent</span><span class="kw-chip q-chip">how many wires</span><span class="kw-chip q-chip">%</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">53%</span><span class="kw-chip a-chip">31%</span><span class="kw-chip a-chip">40%</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W4</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Conduit Area</div><div class="tab-ref">Ch.9 Table 4</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">conduit area</span><span class="kw-chip q-chip">trade size</span><span class="kw-chip q-chip">EMT</span><span class="kw-chip q-chip">RMC</span><span class="kw-chip q-chip">PVC</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">in²</span><span class="kw-chip a-chip">area</span><span class="kw-chip a-chip">0.304</span><span class="kw-chip a-chip">0.533</span><span class="kw-chip a-chip">0.864</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W5</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Conductor Area</div><div class="tab-ref">Ch.9 Table 5</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">conductor area</span><span class="kw-chip q-chip">THHN area</span><span class="kw-chip q-chip">AWG cross-section</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">in²</span><span class="kw-chip a-chip">0.0097</span><span class="kw-chip a-chip">0.0133</span><span class="kw-chip a-chip">0.0209</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W6</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | Boxes Required</div><div class="tab-ref">300.15</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">box required</span><span class="kw-chip q-chip">splice</span><span class="kw-chip q-chip">junction</span><span class="kw-chip q-chip">connection</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">box required</span><span class="kw-chip a-chip">accessible</span><span class="kw-chip a-chip">listed fitting</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W7</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | EMT</div><div class="tab-ref">Art. 358</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">EMT</span><span class="kw-chip q-chip">support interval</span><span class="kw-chip q-chip">secure</span><span class="kw-chip q-chip">bends</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">10 ft</span><span class="kw-chip a-chip">36 in</span><span class="kw-chip a-chip">4 bends</span><span class="kw-chip a-chip">Art. 358</span></div>
+      </div>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-header"><div class="tab-id" style="background:#555">W8</div><div><div class="tab-name"><span style="color:#555;font-weight:700">White — Wiring/Boxes</span> | NM Cable (Romex)</div><div class="tab-ref">Art. 334</div></div></div>
+      <div class="tab-body">
+        <div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">NM</span><span class="kw-chip q-chip">Romex</span><span class="kw-chip q-chip">support</span><span class="kw-chip q-chip">staple</span><span class="kw-chip q-chip">fasten</span></div>
+        <div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">4.5 ft</span><span class="kw-chip a-chip">12 in</span><span class="kw-chip a-chip">Art. 334</span></div>
+      </div>
+    </div>
+
+  </div><!-- end nec tab-grid -->
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- UGLY'S -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section uglys">
+  <div class="book-title"><span class="book-emoji">🔴</span> UGLY'S Electrical Reference — Red Cross-Ref Tabs (place next to matching NEC tab)</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-AMP</div><div><div class="tab-name">Ampacity Table</div><div class="tab-ref">→ next to B1 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">ampacity</span><span class="kw-chip q-chip">AWG</span><span class="kw-chip q-chip">copper</span><span class="kw-chip q-chip">amps</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">20A</span><span class="kw-chip a-chip">25A</span><span class="kw-chip a-chip">50A</span><span class="kw-chip a-chip">75A</span><span class="kw-chip a-chip">95A</span><span class="kw-chip a-chip">150A</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-3PH</div><div><div class="tab-name">3-Phase Motor FLC</div><div class="tab-ref">→ next to P1 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">3-phase</span><span class="kw-chip q-chip">motor HP</span><span class="kw-chip q-chip">460V</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">7.6A</span><span class="kw-chip a-chip">14A</span><span class="kw-chip a-chip">21A</span><span class="kw-chip a-chip">34A</span><span class="kw-chip a-chip">52A</span><span class="kw-chip a-chip">65A</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-1PH</div><div><div class="tab-name">Single-Phase FLC</div><div class="tab-ref">→ next to P2 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">single phase</span><span class="kw-chip q-chip">motor HP</span><span class="kw-chip q-chip">115V</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">8A</span><span class="kw-chip a-chip">12A</span><span class="kw-chip a-chip">16A</span><span class="kw-chip a-chip">24A</span><span class="kw-chip a-chip">28A</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-OCPD</div><div><div class="tab-name">Motor OCPD Sizing</div><div class="tab-ref">→ next to P4 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">motor fuse</span><span class="kw-chip q-chip">motor breaker</span><span class="kw-chip q-chip">maximum %</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">250%</span><span class="kw-chip a-chip">175%</span><span class="kw-chip a-chip">× FLC</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-GEC</div><div><div class="tab-name">GEC Sizing</div><div class="tab-ref">→ next to G4 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">GEC</span><span class="kw-chip q-chip">service conductor size</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">4 AWG</span><span class="kw-chip a-chip">2 AWG</span><span class="kw-chip a-chip">1/0</span><span class="kw-chip a-chip">2/0</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-EGC</div><div><div class="tab-name">EGC Sizing</div><div class="tab-ref">→ next to G5 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">EGC</span><span class="kw-chip q-chip">equipment grounding</span><span class="kw-chip q-chip">OCPD</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">14 AWG</span><span class="kw-chip a-chip">10 AWG</span><span class="kw-chip a-chip">8 AWG</span><span class="kw-chip a-chip">4 AWG</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-STD</div><div><div class="tab-name">Standard OCPD Sizes</div><div class="tab-ref">→ next to Y2 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">standard size</span><span class="kw-chip q-chip">next higher</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">15</span><span class="kw-chip a-chip">20</span><span class="kw-chip a-chip">25</span><span class="kw-chip a-chip">30</span><span class="kw-chip a-chip">35</span><span class="kw-chip a-chip">40</span><span class="kw-chip a-chip">50</span><span class="kw-chip a-chip">60</span><span class="kw-chip a-chip">70</span><span class="kw-chip a-chip">100</span><span class="kw-chip a-chip">200</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#8b0000">U-BOX</div><div><div class="tab-name">Box Fill Volumes</div><div class="tab-ref">→ next to W1 | page: ___</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">box fill</span><span class="kw-chip q-chip">volume</span><span class="kw-chip q-chip">in³</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">2.0</span><span class="kw-chip a-chip">2.25</span><span class="kw-chip a-chip">2.5</span><span class="kw-chip a-chip">3.0</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- OSHA 1926 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section osha">
+  <div class="book-title"><span class="book-emoji">🟥</span> OSHA 1926 — Construction Safety</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">GFCI</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | GFCI on Construction Sites</div><div class="tab-ref">1926.404(b)(1)</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">construction site</span><span class="kw-chip q-chip">temporary power</span><span class="kw-chip q-chip">15A/20A</span><span class="kw-chip q-chip">125V</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">GFCI</span><span class="kw-chip a-chip">all</span><span class="kw-chip a-chip">Class A</span><span class="kw-chip a-chip">equipment assurance</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">ELEC</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Power Line Clearance</div><div class="tab-ref">1926.416</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">overhead power line</span><span class="kw-chip q-chip">clearance</span><span class="kw-chip q-chip">distance</span><span class="kw-chip q-chip">energized</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">10 ft</span><span class="kw-chip a-chip">up to 50kV</span><span class="kw-chip a-chip">qualified</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">LOTO</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Lockout / Tagout</div><div class="tab-ref">1926.417</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">lockout</span><span class="kw-chip q-chip">tagout</span><span class="kw-chip q-chip">deenergize</span><span class="kw-chip q-chip">servicing</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">lock</span><span class="kw-chip a-chip">tag</span><span class="kw-chip a-chip">verify zero energy</span><span class="kw-chip a-chip">test after</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">SCAF</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Scaffolding</div><div class="tab-ref">1926.451</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">scaffold</span><span class="kw-chip q-chip">plank</span><span class="kw-chip q-chip">guardrail</span><span class="kw-chip q-chip">height</span><span class="kw-chip q-chip">access</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">10 ft</span><span class="kw-chip a-chip">4:1 ratio</span><span class="kw-chip a-chip">18 in</span><span class="kw-chip a-chip">6 in past support</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">FALL</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Fall Protection Systems</div><div class="tab-ref">1926.502 ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">fall</span><span class="kw-chip q-chip">guardrail</span><span class="kw-chip q-chip">top rail</span><span class="kw-chip q-chip">height</span><span class="kw-chip q-chip">leading edge</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">42 in ±3 in</span><span class="kw-chip a-chip">top rail</span><span class="kw-chip a-chip">mid-rail 21 in</span><span class="kw-chip a-chip">6 ft trigger</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">LADR</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Ladders</div><div class="tab-ref">1926.1053 ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">ladder</span><span class="kw-chip q-chip">angle</span><span class="kw-chip q-chip">extend above landing</span><span class="kw-chip q-chip">portable</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">3 ft above landing</span><span class="kw-chip a-chip">1:4 ratio</span><span class="kw-chip a-chip">75°</span><span class="kw-chip a-chip">12 in rungs</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">EXCV</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Excavations / Trenching</div><div class="tab-ref">1926.651/652</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">excavation</span><span class="kw-chip q-chip">trench depth</span><span class="kw-chip q-chip">shoring</span><span class="kw-chip q-chip">cave-in</span><span class="kw-chip q-chip">soil</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">5 ft</span><span class="kw-chip a-chip">4 ft</span><span class="kw-chip a-chip">competent person</span><span class="kw-chip a-chip">Type A/B/C</span><span class="kw-chip a-chip">1½:1</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#b34700">PPE</div><div><div class="tab-name"><span style="color:#b34700;font-weight:700">Black — OSHA</span> | Personal Protective Equipment</div><div class="tab-ref">1926.95/100</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">PPE</span><span class="kw-chip q-chip">hard hat</span><span class="kw-chip q-chip">eye protection</span><span class="kw-chip q-chip">employer</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">employer provided</span><span class="kw-chip a-chip">Type I/II</span><span class="kw-chip a-chip">Class E</span><span class="kw-chip a-chip">ANSI</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- NFPA 70E -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section nfpa">
+  <div class="book-title"><span class="book-emoji">🟧</span> NFPA 70E — Electrical Safety in the Workplace</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">BOUND</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Approach Boundaries</div><div class="tab-ref">130.4 + Table 130.4(D)(a)</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">approach</span><span class="kw-chip q-chip">boundary</span><span class="kw-chip q-chip">distance</span><span class="kw-chip q-chip">exposed energized</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">limited</span><span class="kw-chip a-chip">restricted</span><span class="kw-chip a-chip">prohibited</span><span class="kw-chip a-chip">arc flash boundary</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">PPE-AF</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Arc Flash PPE Categories</div><div class="tab-ref">Table 130.5(C) ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">arc flash</span><span class="kw-chip q-chip">PPE</span><span class="kw-chip q-chip">category</span><span class="kw-chip q-chip">task</span><span class="kw-chip q-chip">protection level</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">Category 1</span><span class="kw-chip a-chip">Category 2</span><span class="kw-chip a-chip">Category 3</span><span class="kw-chip a-chip">Category 4</span><span class="kw-chip a-chip">cal/cm²</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">LOTO</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Lockout/Tagout Steps</div><div class="tab-ref">120.1–120.6</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">LOTO</span><span class="kw-chip q-chip">steps</span><span class="kw-chip q-chip">procedure</span><span class="kw-chip q-chip">sequence</span><span class="kw-chip q-chip">deenergize</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">identify</span><span class="kw-chip a-chip">notify</span><span class="kw-chip a-chip">deenergize</span><span class="kw-chip a-chip">apply lock</span><span class="kw-chip a-chip">verify zero</span><span class="kw-chip a-chip">6 steps</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">PERMIT</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Energized Work Permit</div><div class="tab-ref">110.3</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">energized work</span><span class="kw-chip q-chip">permit</span><span class="kw-chip q-chip">when required</span><span class="kw-chip q-chip">live work</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">written permit</span><span class="kw-chip a-chip">greater hazard</span><span class="kw-chip a-chip">infeasible to deenergize</span><span class="kw-chip a-chip">qualified</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">GLOVE</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Rubber Insulating Gloves</div><div class="tab-ref">130.7(C)(7)</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">gloves</span><span class="kw-chip q-chip">class</span><span class="kw-chip q-chip">voltage rating</span><span class="kw-chip q-chip">rubber insulating</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">Class 00</span><span class="kw-chip a-chip">Class 0</span><span class="kw-chip a-chip">Class 1</span><span class="kw-chip a-chip">Class 2</span><span class="kw-chip a-chip">500V</span><span class="kw-chip a-chip">1000V</span><span class="kw-chip a-chip">7,500V</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#6a0080">LABEL</div><div><div class="tab-name"><span style="color:#6a0080;font-weight:700">Red — NFPA 70E</span> | Arc Flash Warning Label</div><div class="tab-ref">130.5(H)</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">label</span><span class="kw-chip q-chip">equipment</span><span class="kw-chip q-chip">arc flash</span><span class="kw-chip q-chip">must include</span><span class="kw-chip q-chip">what on label</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">voltage</span><span class="kw-chip a-chip">arc flash boundary</span><span class="kw-chip a-chip">incident energy</span><span class="kw-chip a-chip">cal/cm²</span><span class="kw-chip a-chip">PPE category</span><span class="kw-chip a-chip">date</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- NASCLA -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section nascla">
+  <div class="book-title"><span class="book-emoji">🔷</span> NASCLA Contractors Guide</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">CONT</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Contract Types</div><div class="tab-ref">Business/Law Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">contract type</span><span class="kw-chip q-chip">risk</span><span class="kw-chip q-chip">payment</span><span class="kw-chip q-chip">owner/contractor</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">lump sum</span><span class="kw-chip a-chip">cost-plus</span><span class="kw-chip a-chip">unit price</span><span class="kw-chip a-chip">GMP</span><span class="kw-chip a-chip">T&M</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">LIEN</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Mechanic's Lien</div><div class="tab-ref">Lien Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">lien</span><span class="kw-chip q-chip">unpaid</span><span class="kw-chip q-chip">notice</span><span class="kw-chip q-chip">file deadline</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">notice of commencement</span><span class="kw-chip a-chip">preliminary notice</span><span class="kw-chip a-chip">days</span><span class="kw-chip a-chip">claimant</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">CHG</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Change Orders</div><div class="tab-ref">Contract Admin Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">change order</span><span class="kw-chip q-chip">extra work</span><span class="kw-chip q-chip">scope change</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">written</span><span class="kw-chip a-chip">signed</span><span class="kw-chip a-chip">constructive change</span><span class="kw-chip a-chip">cardinal change</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">INS</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Insurance Types</div><div class="tab-ref">Insurance Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">insurance</span><span class="kw-chip q-chip">coverage</span><span class="kw-chip q-chip">liability</span><span class="kw-chip q-chip">workers comp</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">general liability</span><span class="kw-chip a-chip">GL</span><span class="kw-chip a-chip">workers comp</span><span class="kw-chip a-chip">builder's risk</span><span class="kw-chip a-chip">COI</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">BOND</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Surety / Bonding</div><div class="tab-ref">Bonding Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">bond</span><span class="kw-chip q-chip">surety</span><span class="kw-chip q-chip">principal</span><span class="kw-chip q-chip">obligee</span><span class="kw-chip q-chip">guarantee</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">performance bond</span><span class="kw-chip a-chip">payment bond</span><span class="kw-chip a-chip">bid bond</span><span class="kw-chip a-chip">surety company</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">SCHED</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Scheduling / CPM</div><div class="tab-ref">Project Mgmt Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">schedule</span><span class="kw-chip q-chip">critical path</span><span class="kw-chip q-chip">float</span><span class="kw-chip q-chip">delay</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">CPM</span><span class="kw-chip a-chip">total float</span><span class="kw-chip a-chip">free float</span><span class="kw-chip a-chip">zero float</span><span class="kw-chip a-chip">critical path</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">LIC</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Licensing Requirements</div><div class="tab-ref">Licensing Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">license</span><span class="kw-chip q-chip">qualifying party</span><span class="kw-chip q-chip">experience</span><span class="kw-chip q-chip">years</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">4 years</span><span class="kw-chip a-chip">qualifying party</span><span class="kw-chip a-chip">$30,000 bond</span><span class="kw-chip a-chip">NSCB</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#005a8e">WAIV</div><div><div class="tab-name"><span style="color:#005a8e;font-weight:700">Gold — NASCLA</span> | Lien Waivers</div><div class="tab-ref">Lien Ch.</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">lien waiver</span><span class="kw-chip q-chip">release</span><span class="kw-chip q-chip">conditional</span><span class="kw-chip q-chip">final</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">conditional</span><span class="kw-chip a-chip">unconditional</span><span class="kw-chip a-chip">partial</span><span class="kw-chip a-chip">final</span><span class="kw-chip a-chip">upon receipt</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PMBOK 7 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section pmbok">
+  <div class="book-title"><span class="book-emoji">🔶</span> PMBOK 7 — Project Management</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">EVM</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Earned Value Formulas</div><div class="tab-ref">Performance Domain ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">earned value</span><span class="kw-chip q-chip">SV CV SPI CPI</span><span class="kw-chip q-chip">variance</span><span class="kw-chip q-chip">index</span><span class="kw-chip q-chip">EAC</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">SV=EV−PV</span><span class="kw-chip a-chip">CV=EV−AC</span><span class="kw-chip a-chip">SPI=EV/PV</span><span class="kw-chip a-chip">CPI=EV/AC</span><span class="kw-chip a-chip">EAC=BAC/CPI</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">RISK</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Risk Management</div><div class="tab-ref">Uncertainty Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">risk</span><span class="kw-chip q-chip">probability</span><span class="kw-chip q-chip">impact</span><span class="kw-chip q-chip">response strategy</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">avoid</span><span class="kw-chip a-chip">transfer</span><span class="kw-chip a-chip">mitigate</span><span class="kw-chip a-chip">accept</span><span class="kw-chip a-chip">exploit</span><span class="kw-chip a-chip">enhance</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">QUAL</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Quality Management</div><div class="tab-ref">Delivery Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">quality</span><span class="kw-chip q-chip">assurance</span><span class="kw-chip q-chip">control</span><span class="kw-chip q-chip">defect</span><span class="kw-chip q-chip">inspection</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">QA</span><span class="kw-chip a-chip">QC</span><span class="kw-chip a-chip">control chart</span><span class="kw-chip a-chip">Pareto</span><span class="kw-chip a-chip">fishbone</span><span class="kw-chip a-chip">prevention</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">PROC</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Procurement / Contract Types</div><div class="tab-ref">Project Work Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">procurement</span><span class="kw-chip q-chip">contract type</span><span class="kw-chip q-chip">buyer/seller risk</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">FFP</span><span class="kw-chip a-chip">FP-EPA</span><span class="kw-chip a-chip">CPFF</span><span class="kw-chip a-chip">CPAF</span><span class="kw-chip a-chip">T&M</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">COMP</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Schedule Compression</div><div class="tab-ref">Planning Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">compress schedule</span><span class="kw-chip q-chip">shorten</span><span class="kw-chip q-chip">reduce duration</span><span class="kw-chip q-chip">deadline</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">crashing</span><span class="kw-chip a-chip">fast tracking</span><span class="kw-chip a-chip">cost increases</span><span class="kw-chip a-chip">risk increases</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">SCOPE</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Scope / WBS</div><div class="tab-ref">Planning Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">scope</span><span class="kw-chip q-chip">WBS</span><span class="kw-chip q-chip">work breakdown</span><span class="kw-chip q-chip">scope creep</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">WBS</span><span class="kw-chip a-chip">work package</span><span class="kw-chip a-chip">decomposition</span><span class="kw-chip a-chip">scope baseline</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a5e2a">STKH</div><div><div class="tab-name"><span style="color:#1a5e2a;font-weight:700">Gray — PMBOK</span> | Stakeholder Management</div><div class="tab-ref">Stakeholder Domain</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">stakeholder</span><span class="kw-chip q-chip">influence</span><span class="kw-chip q-chip">power</span><span class="kw-chip q-chip">interest</span><span class="kw-chip q-chip">engage</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">power/interest grid</span><span class="kw-chip a-chip">manage closely</span><span class="kw-chip a-chip">monitor</span><span class="kw-chip a-chip">keep informed</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ASHRAE + MIKE HOLT (side by side) -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="book-section ashrae">
+  <div class="book-title"><span class="book-emoji">🔳</span> ASHRAE 90.1 — Energy Standard</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#3d3d00">LPD</div><div><div class="tab-name"><span style="color:#3d3d00;font-weight:700">Teal — ASHRAE</span> | Lighting Power Density</div><div class="tab-ref">Table 9.6.1 ⭐ MOST TESTED</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">LPD</span><span class="kw-chip q-chip">W/ft²</span><span class="kw-chip q-chip">building type</span><span class="kw-chip q-chip">maximum allowed</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">0.82 W/ft²</span><span style="font-size:9px;color:#777">(office)</span><span class="kw-chip a-chip">0.33 W/ft²</span><span style="font-size:9px;color:#777">(warehouse)</span><span class="kw-chip a-chip">1.01 W/ft²</span><span style="font-size:9px;color:#777">(retail)</span><span class="kw-chip a-chip">0.50 W/ft²</span><span style="font-size:9px;color:#777">(storage)</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#3d3d00">HVAC</div><div><div class="tab-name"><span style="color:#3d3d00;font-weight:700">Teal — ASHRAE</span> | HVAC Efficiency</div><div class="tab-ref">Section 6</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">HVAC</span><span class="kw-chip q-chip">efficiency</span><span class="kw-chip q-chip">COP</span><span class="kw-chip q-chip">EER</span><span class="kw-chip q-chip">SEER</span><span class="kw-chip q-chip">minimum</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">COP</span><span class="kw-chip a-chip">EER</span><span class="kw-chip a-chip">SEER</span><span class="kw-chip a-chip">climate zone</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#3d3d00">ENV</div><div><div class="tab-name"><span style="color:#3d3d00;font-weight:700">Teal — ASHRAE</span> | Building Envelope</div><div class="tab-ref">Section 5</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">envelope</span><span class="kw-chip q-chip">insulation</span><span class="kw-chip q-chip">R-value</span><span class="kw-chip q-chip">U-factor</span><span class="kw-chip q-chip">window</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">R-value</span><span class="kw-chip a-chip">U-factor</span><span class="kw-chip a-chip">SHGC</span><span class="kw-chip a-chip">climate zone 1–8</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#3d3d00">CTRL</div><div><div class="tab-name"><span style="color:#3d3d00;font-weight:700">Teal — ASHRAE</span> | Lighting Controls</div><div class="tab-ref">Section 9</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">lighting control</span><span class="kw-chip q-chip">occupancy sensor</span><span class="kw-chip q-chip">automatic shutoff</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">occupancy sensor</span><span class="kw-chip a-chip">automatic shutoff</span><span class="kw-chip a-chip">daylight zone</span></div></div></div>
+  </div>
+</div>
+
+<div class="book-section holt">
+  <div class="book-title"><span class="book-emoji">🔵</span> Mike Holt — Electrical Theory</div>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">OHM</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Ohm's Law</div><div class="tab-ref">Ch. Fundamentals ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">voltage</span><span class="kw-chip q-chip">current</span><span class="kw-chip q-chip">resistance</span><span class="kw-chip q-chip">find/calculate</span><span class="kw-chip q-chip">E I R</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">E=IR</span><span class="kw-chip a-chip">I=E/R</span><span class="kw-chip a-chip">R=E/I</span><span class="kw-chip a-chip">volts</span><span class="kw-chip a-chip">amps</span><span class="kw-chip a-chip">ohms</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">PWR</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Power Formulas</div><div class="tab-ref">Ch. Power</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">power</span><span class="kw-chip q-chip">watts</span><span class="kw-chip q-chip">calculate wattage</span><span class="kw-chip q-chip">kW</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">P=IE</span><span class="kw-chip a-chip">P=I²R</span><span class="kw-chip a-chip">P=E²/R</span><span class="kw-chip a-chip">watts</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">VD</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Voltage Drop</div><div class="tab-ref">Ch. Conductors ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">voltage drop</span><span class="kw-chip q-chip">distance</span><span class="kw-chip q-chip">length</span><span class="kw-chip q-chip">conductor size</span><span class="kw-chip q-chip">allowable %</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">VD=IR</span><span class="kw-chip a-chip">2%</span><span class="kw-chip a-chip">3%</span><span class="kw-chip a-chip">5%</span><span class="kw-chip a-chip">CM=K×I×D/VD</span><span class="kw-chip a-chip">K=12.9</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">SER</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Series Circuits</div><div class="tab-ref">Ch. Circuits</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">series circuit</span><span class="kw-chip q-chip">total resistance</span><span class="kw-chip q-chip">same current</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">Rt=R1+R2+R3</span><span class="kw-chip a-chip">same current</span><span class="kw-chip a-chip">voltage divides</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">PAR</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Parallel Circuits</div><div class="tab-ref">Ch. Circuits</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">parallel circuit</span><span class="kw-chip q-chip">total resistance</span><span class="kw-chip q-chip">same voltage</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">1/Rt=1/R1+1/R2</span><span class="kw-chip a-chip">same voltage</span><span class="kw-chip a-chip">current divides</span><span class="kw-chip a-chip">less than smallest R</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">XFMR</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Transformer Theory</div><div class="tab-ref">Ch. Transformers</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">transformer</span><span class="kw-chip q-chip">turns ratio</span><span class="kw-chip q-chip">primary/secondary</span><span class="kw-chip q-chip">step up/down</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">Np/Ns=Vp/Vs</span><span class="kw-chip a-chip">turns ratio</span><span class="kw-chip a-chip">step-up</span><span class="kw-chip a-chip">step-down</span><span class="kw-chip a-chip">VA same</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">PF</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | Power Factor</div><div class="tab-ref">Ch. AC Theory</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">power factor</span><span class="kw-chip q-chip">PF</span><span class="kw-chip q-chip">apparent power</span><span class="kw-chip q-chip">kVA kVAR</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">PF=W/VA</span><span class="kw-chip a-chip">leading</span><span class="kw-chip a-chip">lagging</span><span class="kw-chip a-chip">unity=1.0</span><span class="kw-chip a-chip">kVAR</span></div></div></div>
+    <div class="tab-card"><div class="tab-header"><div class="tab-id" style="background:#1a4a4a">3PH</div><div><div class="tab-name"><span style="color:#1a4a4a;font-weight:700">Dk.Green — Holt</span> | 3-Phase Power</div><div class="tab-ref">Ch. 3-Phase ⭐</div></div></div><div class="tab-body"><div class="kw-row"><span class="kw-label kw-q">Q</span><span class="kw-chip q-chip">3-phase</span><span class="kw-chip q-chip">wye delta</span><span class="kw-chip q-chip">line voltage</span><span class="kw-chip q-chip">phase voltage</span><span class="kw-chip q-chip">kVA</span></div><div class="kw-row"><span class="kw-label kw-a">A</span><span class="kw-chip a-chip">VL=VP×√3</span><span class="kw-chip a-chip">1.732×V×I</span><span class="kw-chip a-chip">√3=1.732</span></div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PINK MEMORIZE -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="pink-section">
+  <h2>🩸 Pink Memorize List — Write on Scratch Paper During 15-Min Tutorial</h2>
+  <div class="pink-grid">
+    <div class="pink-group">
+      <h3>NEC 2026 — Don't Look These Up</h3>
+      <div class="pink-item">Dwelling lighting: <span class="pink-val">2 VA/ft²</span> (NOT 3 — exam trap)</div>
+      <div class="pink-item">Small appliance circuit: <span class="pink-val">1,500 VA each</span></div>
+      <div class="pink-item">Laundry circuit: <span class="pink-val">1,500 VA</span></div>
+      <div class="pink-item">Range demand (1 range ≤12 kW): <span class="pink-val">8 kW</span></div>
+      <div class="pink-item">EGC sizes: 15A/20A→<span class="pink-val">14 AWG</span> | 30A/60A→<span class="pink-val">10 AWG</span> | 100A→<span class="pink-val">8 AWG</span> | 200A→<span class="pink-val">4 AWG</span></div>
+      <div class="pink-item">Small conductor max OCPD: 14ga→<span class="pink-val">15A</span> | 12ga→<span class="pink-val">20A</span> | 10ga→<span class="pink-val">30A</span></div>
+      <div class="pink-item">Conduit fill: 1 wire=<span class="pink-val">53%</span> | 2 wires=<span class="pink-val">31%</span> | 3+ wires=<span class="pink-val">40%</span></div>
+      <div class="pink-item">Box fill: #14=<span class="pink-val">2.0</span> | #12=<span class="pink-val">2.25</span> | #10=<span class="pink-val">2.5</span> | #8=<span class="pink-val">3.0</span> in³</div>
+      <div class="pink-item">Motor conductor: <span class="pink-val">125% × FLC</span></div>
+      <div class="pink-item">Motor CB (inv-time): <span class="pink-val">250% × FLC</span> max</div>
+      <div class="pink-item">Motor dual-element fuse: <span class="pink-val">175% × FLC</span> max</div>
+      <div class="pink-item">Motor overload: SF≥1.15 → <span class="pink-val">125%</span> | SF&lt;1.15 → <span class="pink-val">115%</span></div>
+      <div class="pink-item">Ground rod: <span class="pink-val">8 ft min length</span> | 2 rods: <span class="pink-val">6 ft apart</span></div>
+      <div class="pink-item">Derating: 4–6 cond=<span class="pink-val">80%</span> | 7–9=<span class="pink-val">65%</span> | 10–20=<span class="pink-val">50%</span></div>
+      <div class="pink-item">Demand factors: first 3,000VA@<span class="pink-val">100%</span> | next 117k@<span class="pink-val">35%</span> | rest@<span class="pink-val">25%</span></div>
+    </div>
+    <div class="pink-group">
+      <h3>OSHA 1926</h3>
+      <div class="pink-item">Fall protection trigger: <span class="pink-val">6 ft</span> (construction)</div>
+      <div class="pink-item">Guardrail top rail: <span class="pink-val">42 in ±3 in</span></div>
+      <div class="pink-item">Mid-rail: <span class="pink-val">21 in</span></div>
+      <div class="pink-item">Ladder extends above landing: <span class="pink-val">3 ft</span></div>
+      <div class="pink-item">Ladder angle: <span class="pink-val">1:4 (1 ft out per 4 ft up)</span></div>
+      <div class="pink-item">Trench shoring required at: <span class="pink-val">5 ft deep</span></div>
+      <div class="pink-item">Overhead power line clearance: <span class="pink-val">10 ft</span> (up to 50kV)</div>
+    </div>
+    <div class="pink-group">
+      <h3>NFPA 70E</h3>
+      <div class="pink-item">Arc flash label must include: <span class="pink-val">voltage, arc flash boundary, incident energy or PPE category, assessment date</span></div>
+      <div class="pink-item">Class A GFCI trips at: <span class="pink-val">5 mA</span></div>
+      <div class="pink-item">Energized work requires: <span class="pink-val">written permit</span> when deenergizing creates greater hazard or is infeasible</div>
+    </div>
+    <div class="pink-group">
+      <h3>PMBOK 7 — EVM Formulas</h3>
+      <div class="pink-item">EV = <span class="pink-val">% complete × BAC</span></div>
+      <div class="pink-item">SV = <span class="pink-val">EV − PV</span> (positive = ahead)</div>
+      <div class="pink-item">CV = <span class="pink-val">EV − AC</span> (positive = under budget)</div>
+      <div class="pink-item">SPI = <span class="pink-val">EV / PV</span> (&gt;1 = ahead)</div>
+      <div class="pink-item">CPI = <span class="pink-val">EV / AC</span> (&gt;1 = under budget)</div>
+      <div class="pink-item">EAC = <span class="pink-val">BAC / CPI</span></div>
+    </div>
+    <div class="pink-group">
+      <h3>ASHRAE 90.1 — LPD Values</h3>
+      <div class="pink-item">Office: <span class="pink-val">0.82 W/ft²</span></div>
+      <div class="pink-item">Warehouse: <span class="pink-val">0.33 W/ft²</span></div>
+      <div class="pink-item">Retail: <span class="pink-val">1.01 W/ft²</span></div>
+      <div class="pink-item">Storage: <span class="pink-val">0.50 W/ft²</span></div>
+    </div>
+    <div class="pink-group">
+      <h3>Mike Holt Theory Formulas</h3>
+      <div class="pink-item">Ohm's Law: <span class="pink-val">E=IR | I=E/R | R=E/I</span></div>
+      <div class="pink-item">Power: <span class="pink-val">P=IE | P=I²R | P=E²/R</span></div>
+      <div class="pink-item">Voltage drop: <span class="pink-val">VD=IR | CM=K×I×D/VD</span></div>
+      <div class="pink-item">K (copper): <span class="pink-val">12.9</span> | K (aluminum): <span class="pink-val">21.2</span></div>
+      <div class="pink-item">3-phase kVA: <span class="pink-val">1.732 × V × I</span></div>
+      <div class="pink-item">√3 = <span class="pink-val">1.732</span></div>
+      <div class="pink-item">Transformer: <span class="pink-val">Np/Ns = Vp/Vs</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end page-body -->
+
+
+<!-- ACRONYM GLOSSARY -->
+<div style="background:#fff;border:2px solid #334155;border-radius:6px;padding:12px 16px;margin-bottom:14px;">
+  <h2 style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1a1a2e;margin-bottom:10px;">📖 Acronym Quick Reference — All Books</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#1a3a6e;border-bottom:2px solid #1a3a6e;padding-bottom:2px;margin-bottom:5px;">⚡ NEC — Electrical</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>NEC</b> = National Electrical Code<br>
+        <b>AHJ</b> = Authority Having Jurisdiction<br>
+        <b>OCPD</b> = Overcurrent Protective Device<br>
+        <b>OCP</b> = Overcurrent Protection<br>
+        <b>GFCI</b> = Ground Fault Circuit Interrupter<br>
+        <b>AFCI</b> = Arc Fault Circuit Interrupter<br>
+        <b>GEC</b> = Grounding Electrode Conductor<br>
+        <b>EGC</b> = Equipment Grounding Conductor<br>
+        <b>MBJ</b> = Main Bonding Jumper<br>
+        <b>CEE</b> = Concrete-Encased Electrode (Ufer)<br>
+        <b>AWG</b> = American Wire Gauge<br>
+        <b>kcmil</b> = Thousand Circular Mils (wire size)<br>
+        <b>VA</b> = Volt-Amperes<br>
+        <b>kVA</b> = Kilovolt-Amperes<br>
+        <b>kW</b> = Kilowatts (1,000 watts)<br>
+        <b>VD</b> = Voltage Drop<br>
+        <b>PF</b> = Power Factor<br>
+        <b>SWD</b> = Switching Duty (breaker marking)<br>
+        <b>HID</b> = High Intensity Discharge (breaker)<br>
+        <b>AIC</b> = Ampere Interrupting Capacity
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#1a3a6e;border-bottom:2px solid #1a3a6e;padding-bottom:2px;margin-bottom:5px;">⚡ NEC — Conductors &amp; Conduit</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>THHN</b> = Thermoplastic High Heat Nylon-coated (90°C dry)<br>
+        <b>THWN</b> = Thermoplastic Heat &amp; Water-resistant Nylon (75°C wet)<br>
+        <b>THWN-2</b> = Same as THWN but 90°C wet<br>
+        <b>XHHW</b> = Cross-linked poly, High Heat, Water-resistant<br>
+        <b>RHH/RHW</b> = Rubber insulated, High Heat / Water-resistant<br>
+        <b>NM</b> = Nonmetallic-Sheathed Cable ("Romex")<br>
+        <b>MC</b> = Metal-Clad Cable<br>
+        <b>AC</b> = Armored Cable ("BX")<br>
+        <b>UF</b> = Underground Feeder Cable<br>
+        <b>SE</b> = Service Entrance Cable<br>
+        <b>USE</b> = Underground Service Entrance Cable<br>
+        <b>EMT</b> = Electrical Metallic Tubing<br>
+        <b>RMC</b> = Rigid Metal Conduit<br>
+        <b>IMC</b> = Intermediate Metal Conduit<br>
+        <b>FMC</b> = Flexible Metal Conduit<br>
+        <b>LFMC</b> = Liquidtight Flexible Metal Conduit<br>
+        <b>LFNC</b> = Liquidtight Flexible Nonmetallic Conduit<br>
+        <b>RNC/PVC</b> = Rigid Nonmetallic Conduit (PVC)<br>
+        <b>ENT</b> = Electrical Nonmetallic Tubing
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#6a1b9a;border-bottom:2px solid #6a1b9a;padding-bottom:2px;margin-bottom:5px;">⚡ NEC — Motors &amp; A/C</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>FLC</b> = Full Load Current (from NEC table)<br>
+        <b>FLA</b> = Full Load Amps (from motor nameplate)<br>
+        <b>LRC</b> = Locked Rotor Current (starting inrush)<br>
+        <b>SF</b> = Service Factor (motor overload tolerance)<br>
+        <b>MCA</b> = Minimum Circuit Ampacity (A/C nameplate)<br>
+        <b>MOCP</b> = Maximum Overcurrent Protection (A/C nameplate)<br>
+        <b>MOP</b> = Maximum Overcurrent Protection (same as MOCP)<br>
+        <b>HACR</b> = Heating, Air Conditioning &amp; Refrigeration (breaker type)<br>
+        <b>HP</b> = Horsepower (motor rating)<br>
+        <b>VFD</b> = Variable Frequency Drive<br>
+        <b>3-PH</b> = Three-Phase<br>
+        <b>1-PH</b> = Single-Phase
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#b34700;border-bottom:2px solid #b34700;padding-bottom:2px;margin-bottom:5px;">🟥 OSHA 1926</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>OSHA</b> = Occupational Safety &amp; Health Administration<br>
+        <b>PPE</b> = Personal Protective Equipment<br>
+        <b>LOTO</b> = Lockout/Tagout<br>
+        <b>JHA</b> = Job Hazard Analysis<br>
+        <b>SDS</b> = Safety Data Sheet (replaced MSDS)<br>
+        <b>MSDS</b> = Material Safety Data Sheet (old term)<br>
+        <b>PFAS</b> = Personal Fall Arrest System<br>
+        <b>PFCS</b> = Personal Fall Capture System<br>
+        <b>SCBA</b> = Self-Contained Breathing Apparatus<br>
+        <b>ANSI</b> = American National Standards Institute<br>
+        <b>NIOSH</b> = National Institute for Occupational Safety &amp; Health<br>
+        <b>CFR</b> = Code of Federal Regulations<br>
+        <b>29 CFR</b> = OSHA regulations (Title 29)<br>
+        <b>1926</b> = OSHA Construction Standards<br>
+        <b>1910</b> = OSHA General Industry Standards
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#6a0080;border-bottom:2px solid #6a0080;padding-bottom:2px;margin-bottom:5px;">🟧 NFPA 70E</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>NFPA</b> = National Fire Protection Association<br>
+        <b>70E</b> = Electrical Safety in the Workplace (NFPA standard)<br>
+        <b>PPE</b> = Personal Protective Equipment<br>
+        <b>LOTO</b> = Lockout/Tagout<br>
+        <b>AF</b> = Arc Flash<br>
+        <b>AFB</b> = Arc Flash Boundary<br>
+        <b>LB</b> = Limited (Approach) Boundary<br>
+        <b>RB</b> = Restricted (Approach) Boundary<br>
+        <b>cal/cm²</b> = Calories per Square Centimeter (arc flash energy)<br>
+        <b>FR</b> = Flame Resistant<br>
+        <b>AR</b> = Arc Rated<br>
+        <b>HRC</b> = Hazard Risk Category (old term — now PPE Category)<br>
+        <b>EWP</b> = Energized Work Permit<br>
+        <b>SWL</b> = Safe Work Level<br>
+        <b>IE</b> = Incident Energy (cal/cm²)
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#005a8e;border-bottom:2px solid #005a8e;padding-bottom:2px;margin-bottom:5px;">🔷 NASCLA</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>NASCLA</b> = National Association of State Contractors Licensing Agencies<br>
+        <b>GC</b> = General Contractor<br>
+        <b>Sub</b> = Subcontractor<br>
+        <b>GMP</b> = Guaranteed Maximum Price<br>
+        <b>T&amp;M</b> = Time and Materials (contract type)<br>
+        <b>FFP</b> = Firm Fixed Price (lump sum contract)<br>
+        <b>CPFF</b> = Cost Plus Fixed Fee<br>
+        <b>CPM</b> = Critical Path Method<br>
+        <b>RFI</b> = Request for Information<br>
+        <b>RFP</b> = Request for Proposal<br>
+        <b>RFQ</b> = Request for Quotation<br>
+        <b>COI</b> = Certificate of Insurance<br>
+        <b>GL</b> = General Liability (insurance)<br>
+        <b>WC</b> = Workers Compensation (insurance)<br>
+        <b>E&amp;O</b> = Errors and Omissions (insurance)<br>
+        <b>NOC</b> = Notice of Commencement<br>
+        <b>NTP</b> = Notice to Proceed<br>
+        <b>SOW</b> = Statement of Work<br>
+        <b>AIA</b> = American Institute of Architects (contract forms)<br>
+        <b>NSCB</b> = Nevada State Contractors Board
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#1a5e2a;border-bottom:2px solid #1a5e2a;padding-bottom:2px;margin-bottom:5px;">🔶 PMBOK 7</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>PMBOK</b> = Project Management Body of Knowledge<br>
+        <b>PMI</b> = Project Management Institute<br>
+        <b>PM</b> = Project Manager<br>
+        <b>PMO</b> = Project Management Office<br>
+        <b>EVM</b> = Earned Value Management<br>
+        <b>EV</b> = Earned Value (% complete × BAC)<br>
+        <b>PV</b> = Planned Value (budgeted work scheduled)<br>
+        <b>AC</b> = Actual Cost (what was actually spent)<br>
+        <b>BAC</b> = Budget at Completion (total budget)<br>
+        <b>EAC</b> = Estimate at Completion (BAC/CPI)<br>
+        <b>ETC</b> = Estimate to Complete (EAC − AC)<br>
+        <b>VAC</b> = Variance at Completion (BAC − EAC)<br>
+        <b>SV</b> = Schedule Variance (EV − PV)<br>
+        <b>CV</b> = Cost Variance (EV − AC)<br>
+        <b>SPI</b> = Schedule Performance Index (EV/PV)<br>
+        <b>CPI</b> = Cost Performance Index (EV/AC)<br>
+        <b>WBS</b> = Work Breakdown Structure<br>
+        <b>FFP</b> = Firm Fixed Price (same as lump sum)<br>
+        <b>CPFF</b> = Cost Plus Fixed Fee<br>
+        <b>CPAF</b> = Cost Plus Award Fee<br>
+        <b>CPIF</b> = Cost Plus Incentive Fee<br>
+        <b>FP-EPA</b> = Fixed Price with Economic Price Adjustment<br>
+        <b>T&amp;M</b> = Time and Materials<br>
+        <b>QA</b> = Quality Assurance (process-focused)<br>
+        <b>QC</b> = Quality Control (product-focused)
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#3d3d00;border-bottom:2px solid #3d3d00;padding-bottom:2px;margin-bottom:5px;">🔳 ASHRAE 90.1 + Mike Holt Theory</div>
+      <div style="font-size:10px;line-height:1.85;">
+        <b>ASHRAE</b> = American Society of Heating, Refrigerating &amp; AC Engineers<br>
+        <b>LPD</b> = Lighting Power Density (W/ft²)<br>
+        <b>HVAC</b> = Heating, Ventilation, and Air Conditioning<br>
+        <b>COP</b> = Coefficient of Performance (efficiency ratio)<br>
+        <b>EER</b> = Energy Efficiency Ratio (cooling efficiency)<br>
+        <b>SEER</b> = Seasonal Energy Efficiency Ratio<br>
+        <b>SHGC</b> = Solar Heat Gain Coefficient (windows)<br>
+        <b>R-value</b> = Thermal Resistance (insulation rating)<br>
+        <b>U-factor</b> = Thermal Transmittance (inverse of R)<br>
+        <hr style="border:none;border-top:1px solid #ddd;margin:5px 0;">
+        <b>AC</b> = Alternating Current<br>
+        <b>DC</b> = Direct Current<br>
+        <b>EMF</b> = Electromotive Force (voltage)<br>
+        <b>kVAR</b> = Kilovolt-Amperes Reactive (reactive power)<br>
+        <b>PF</b> = Power Factor (true power ÷ apparent power)<br>
+        <b>CM</b> = Circular Mils (conductor cross-section area)<br>
+        <b>K</b> = Resistivity constant (Cu=12.9, Al=21.2)<br>
+        <b>√3</b> = Square root of 3 = 1.732 (3-phase factor)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="text-align:center;padding:8px;font-size:9px;color:#aaa;border-top:1px solid #ddd;background:#fff;">
+  NASCLA Electrical Exam Tab Label Reference &nbsp;|&nbsp; Drew &nbsp;|&nbsp; Exam: June 30, 2026 &nbsp;|&nbsp; NEC 2026 corrected (Art. 120 = Load Calcs) &nbsp;|&nbsp; Generated by SuperClaw
+</div>
+
+</body>
+</html>
