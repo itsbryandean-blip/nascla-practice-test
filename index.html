@@ -32,8 +32,19 @@
   #screen-setup { display: block; }
   .section-title { font-size: 0.75rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
   .card { background: var(--navy2); border: 1px solid var(--navy3); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-  .mode-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media(max-width:600px){ .mode-grid { grid-template-columns: 1fr; } }
+  .book-btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  @media(max-width:500px){ .book-btn-grid { grid-template-columns: 1fr 1fr; } }
+  .book-btn { border: 2px solid var(--navy3); border-radius: 8px; padding: 10px 6px; cursor: pointer; font-size: 0.82rem; font-weight: 700; text-align: center; transition: all 0.2s; }
+  .book-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+  .book-btn.bb-nec    { background:#1a3a6b; border-color:#3498db; color:#7ec8f7; }
+  .book-btn.bb-osha   { background:#4a2000; border-color:#e67e22; color:#f5a442; }
+  .book-btn.bb-e70    { background:#3a0a0a; border-color:#e74c3c; color:#f08080; }
+  .book-btn.bb-nasc   { background:#3a3200; border-color:#f1c40f; color:#f7e04a; }
+  .book-btn.bb-theory { background:#0a3a1a; border-color:#2ecc71; color:#7af5b0; }
+  .book-btn.bb-ugly   { background:#2a0a3a; border-color:#9b59b6; color:#d4a8e8; }
+  .book-id-result { padding:12px; border-radius:8px; margin-bottom:12px; font-size:0.88rem; line-height:1.6; }
   .mode-card { background: var(--navy3); border: 2px solid transparent; border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
   .mode-card:hover { border-color: var(--gold); }
   .mode-card.selected { border-color: var(--gold); background: #1e2f52; }
@@ -158,11 +169,15 @@
         </div>
         <div class="mode-card" data-mode="openbook" onclick="selectMode(this)">
           <h3>📖 Open Book</h3>
-          <p>Immediate feedback after each answer with explanation and NEC reference.</p>
+          <p>Immediate feedback + book/tab route after each answer.</p>
         </div>
         <div class="mode-card" data-mode="lookup" onclick="selectMode(this)">
           <h3>⏱️ Lookup Training</h3>
-          <p>Open book + timed lookup tracker. Builds speed finding answers in the NEC.</p>
+          <p>Open book + timed lookup tracker. Builds speed finding answers.</p>
+        </div>
+        <div class="mode-card" data-mode="bookid" onclick="selectMode(this)">
+          <h3>🎯 Book ID Drill</h3>
+          <p>Pick which book each question belongs to before answering. Trains your matrix recognition.</p>
         </div>
       </div>
     </div>
@@ -213,6 +228,7 @@
     <div class="card">
       <div class="q-text" id="q-text"></div>
       <div class="choices" id="choices"></div>
+      <div id="book-id-panel" class="hidden"></div>
       <div id="feedback" class="hidden"></div>
       <div id="lookup-timer-box" class="lookup-timer-box hidden">
         <div style="font-size:0.82rem;color:var(--gray);">📖 Found the answer? Start your lookup timer:</div>
@@ -966,6 +982,95 @@ const UGLYS = {
 };
 
 // =============================================
+// BOOK NAMES + TAB REFERENCE SYSTEM
+// =============================================
+const BOOK_NAMES = {
+  B:"NEC 2026", O:"OSHA 1926", P:"NFPA 70E", Y:"NASCLA Guide", G:"Mike Holt Theory"
+};
+const BOOK_COLORS = {
+  B:"#3498db", O:"#e67e22", P:"#e74c3c", Y:"#f1c40f", G:"#2ecc71"
+};
+
+// Tab route: bCode=book letter, bTab=tab number, bLabel=tab name+keywords, uTab=Ugly's tab (optional)
+const TABREFS = {
+  1:  {bCode:"B",bTab:20,bLabel:"B-20 │ T250.122 — EGC size | equipment ground, AWG",         uTab:"U-7"},
+  2:  {bCode:"B",bTab:18,bLabel:"B-18 │ Art.250 — grounding & bonding definitions"},
+  3:  {bCode:"B",bTab:19,bLabel:"B-19 │ T250.66 — GEC size | service size, copper, AWG",        uTab:"U-7"},
+  4:  {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52 — grounding electrodes | rod, plate, rebar"},
+  5:  {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52(A)(1) — water pipe electrode"},
+  6:  {bCode:"B",bTab:22,bLabel:"B-22 │ 250.102 — bonding jumper | supply side"},
+  7:  {bCode:"B",bTab:18,bLabel:"B-18 │ 250.28 — main bonding jumper | neutral-to-ground"},
+  8:  {bCode:"B",bTab:20,bLabel:"B-20 │ T250.122 — EGC size | equipment ground, AWG",         uTab:"U-7"},
+  9:  {bCode:"B",bTab:5, bLabel:"B-5  │ 210.21 — outlet rating | 15A/20A circuit, receptacle"},
+  10: {bCode:"B",bTab:6, bLabel:"B-6  │ 210.8 — GFCI required | bathroom, garage, outdoor"},
+  11: {bCode:"B",bTab:11,bLabel:"B-11 │ 220.52(A) — small appliance | 1500VA, kitchen"},
+  12: {bCode:"B",bTab:5, bLabel:"B-5  │ 210.11(C)(1) — two 20A kitchen circuits required"},
+  13: {bCode:"B",bTab:6, bLabel:"B-6  │ 210.8 — GFCI required | bathroom, outdoor"},
+  14: {bCode:"B",bTab:15,bLabel:"B-15 │ 240.24(E) — OCPD not in bathrooms | location"},
+  15: {bCode:"B",bTab:10,bLabel:"B-10 │ T220.42 — demand factor | lighting, first 3000 sqft"},
+  16: {bCode:"B",bTab:9, bLabel:"B-9  │ T220.12 — unit load | 3 VA/sqft, general lighting"},
+  17: {bCode:"B",bTab:25,bLabel:"B-25 │ T310.16 — ampacity | THWN, 75°C, AWG",              uTab:"U-2"},
+  18: {bCode:"B",bTab:26,bLabel:"B-26 │ T310.15(C)(1) — derating | 4+ conductors, 80%",        uTab:"U-3"},
+  19: {bCode:"B",bTab:27,bLabel:"B-27 │ T300.5 — burial depth | PVC/RMC/UF underground",       uTab:"U-9"},
+  20: {bCode:"B",bTab:31,bLabel:"B-31 │ 358.26 — conduit bends | 360° max between pulls"},
+  21: {bCode:"B",bTab:32,bLabel:"B-32 │ Ch.9 T1 — conduit fill % | 40% for 3+ wires",          uTab:"U-4"},
+  22: {bCode:"B",bTab:23,bLabel:"B-23 │ 300.14 — free conductor | 6 in. at outlet/box"},
+  23: {bCode:"B",bTab:30,bLabel:"B-30 │ 334.10/12 — NM cable | where NOT permitted"},
+  24: {bCode:"B",bTab:35,bLabel:"B-35 │ Annex C — max conductors | EMT 3/4 in., AWG",          uTab:"U-4"},
+  25: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.22 — motor conductor | 125% FLC continuous"},
+  26: {bCode:"B",bTab:38,bLabel:"B-38 │ T430.250 — 3ph motor FLC | HP, 208/240/480V",          uTab:"U-6"},
+  27: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.32(A)(1) — motor overload | 140% FLC"},
+  28: {bCode:"B",bTab:39,bLabel:"B-39 │ T430.52 — motor OCPD | 250% inv.time, 300% dual"},
+  29: {bCode:"B",bTab:37,bLabel:"B-37 │ T430.248 — 1ph motor FLC | HP, 115/230V",              uTab:"U-5"},
+  30: {bCode:"B",bTab:3, bLabel:"B-3  │ T110.26(A)(1) — working clearance | 3ft Cond.1/2/3"},
+  31: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(B) — working space width | 30 in. minimum"},
+  32: {bCode:"B",bTab:16,bLabel:"B-16 │ 240.4(D) — small conductor | #14=15A #12=20A #10=30A", uTab:"U-10"},
+  33: {bCode:"B",bTab:14,bLabel:"B-14 │ 230.79(C) — service disconnect | 100A min 1-family"},
+  34: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(E) — headroom | 6½ ft above working space"},
+  35: {bCode:"B",bTab:17,bLabel:"B-17 │ 240.6(A) — standard OCPD sizes | 15,20,25,30,35,40...", uTab:"U-10"},
+  36: {bCode:"O",bTab:2, bLabel:"O-2  │ 1926.404/405 — GFCI | construction 15/20A receptacles"},
+  37: {bCode:"O",bTab:9, bLabel:"O-9  │ 1926.403 — electrical general | flexible cord, voltage"},
+  38: {bCode:"O",bTab:7, bLabel:"O-7  │ Subpart P — excavation | 5 ft shoring, cave-in"},
+  39: {bCode:"O",bTab:6, bLabel:"O-6  │ 1926.501 — fall protection | 6 ft, leading edge"},
+  40: {bCode:"O",bTab:5, bLabel:"O-5  │ Subpart L — scaffold | guardrail height, 10 ft"},
+  41: {bCode:"Y",bTab:2, bLabel:"Y-2  │ Contracts — lump sum/unit price/cost plus"},
+  42: {bCode:"Y",bTab:4, bLabel:"Y-4  │ Liens — mechanic's lien | notice, filing, time limit"},
+  43: {bCode:"Y",bTab:5, bLabel:"Y-5  │ Insurance — GL/workers comp/builder's risk"},
+  44: {bCode:"Y",bTab:8, bLabel:"Y-8  │ Scheduling — CPM | critical path, float, network"},
+  45: {bCode:"Y",bTab:7, bLabel:"Y-7  │ Financial — overhead | markup, profit, burden rate"},
+  46: {bCode:"Y",bTab:1, bLabel:"Y-1  │ Business structures — LLC/Corp/Partnership | liability"},
+  47: {bCode:"Y",bTab:3, bLabel:"Y-3  │ Change orders — scope change | COR, approval"},
+  48: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500 — hazardous | Class I/II/III, Division 1/2"},
+  49: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.517 — healthcare | patient care, essential electrical"},
+  50: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500 — Class II Div 1/2 | combustible dust, grain"},
+  51: {bCode:"G",bTab:1, bLabel:"G-1  │ Ohm's Law — I=V/R | volts, amps, ohms, resistance",     uTab:"U-1"},
+  52: {bCode:"G",bTab:1, bLabel:"G-1  │ Power formula — P=V×I | watts, single phase",           uTab:"U-1"},
+  53: {bCode:"G",bTab:3, bLabel:"G-3  │ 3ph power — P=V×I×1.732×PF | three phase kVA",        uTab:"U-1"},
+  54: {bCode:"G",bTab:4, bLabel:"G-4  │ Voltage drop — VD=2KIL/CM | circular mils, K factor",   uTab:"U-1"},
+  55: {bCode:"G",bTab:3, bLabel:"G-3  │ Power factor — PF=kW/kVA | real vs apparent power",     uTab:"U-1"},
+  56: {bCode:"G",bTab:2, bLabel:"G-2  │ Series circuit — RT=R1+R2 | voltage divides, same I",   uTab:"U-1"},
+  57: {bCode:"G",bTab:2, bLabel:"G-2  │ Parallel circuit — IT=I1+I2 | voltage same, I divides", uTab:"U-1"},
+  58: {bCode:"G",bTab:2, bLabel:"G-2  │ Impedance — Z=√(R²+XL²) | AC resistance, reactance",   uTab:"U-1"},
+  59: {bCode:"B",bTab:26,bLabel:"B-26 │ T310.15(C)(1) — derating | 4 conductors=80%, 5-6=80%",  uTab:"U-3"},
+  60: {bCode:"G",bTab:5, bLabel:"G-5  │ Transformer — I=kVA×1000/V | turns ratio, primary/sec",  uTab:"U-1"},
+  61: {bCode:"B",bTab:99,bLabel:"B-99 │ Annex D — VD recommendation | 3% branch, 5% total"},
+  62: {bCode:"P",bTab:4, bLabel:"P-4  │ Art.130 — energized work | arc flash boundary, PPE"},
+  63: {bCode:"P",bTab:1, bLabel:"P-1  │ Art.100 — definitions | arc flash, incident energy, PPE"},
+  64: {bCode:"P",bTab:4, bLabel:"P-4  │ Art.130 — energized work permit | when required"},
+  65: {bCode:"P",bTab:3, bLabel:"P-3  │ Art.120 — LOTO/ESWC | lockout tagout, de-energize"},
+  66: {bCode:"P",bTab:4, bLabel:"P-4  │ 130.5 — arc flash risk assessment | when required"},
+  67: {bCode:"P",bTab:5, bLabel:"P-5  │ T130.4 — approach boundaries | limited/restricted"},
+  68: {bCode:"B",bTab:25,bLabel:"B-25 │ T310.16 — ampacity | 8 AWG THHN, 75°C = 50A",          uTab:"U-2"},
+  69: {bCode:"B",bTab:21,bLabel:"B-21 │ 250.52(A)(3) — concrete-encased electrode | 20 ft rebar"},
+  70: {bCode:"B",bTab:2, bLabel:"B-2  │ 110.26(D) — illumination | required at service equip"},
+  71: {bCode:"B",bTab:7, bLabel:"B-7  │ 210.12(A) — AFCI | bedroom circuits, arc fault"},
+  72: {bCode:"B",bTab:36,bLabel:"B-36 │ 430.24 — multiple motors | largest 125% + others 100%"},
+  73: {bCode:"B",bTab:29,bLabel:"B-29 │ T314.16(B) — box fill | volume per conductor, cubic in", uTab:"U-8"},
+  74: {bCode:"O",bTab:10,bLabel:"O-10 │ 1926.502(b)(1) — guardrail | 42 in. ±3 in. top rail"},
+  75: {bCode:"B",bTab:40,bLabel:"B-40 │ Art.500.5(B)(2) — Class I Div 2 | flammable vapor"}
+};
+
+// =============================================
 // TOPIC METADATA
 // =============================================
 const TOPICS = [
@@ -999,6 +1104,8 @@ let state = {
   lookupRunning: false,
   shuffledChoices: [],  // per question: array of {text, originalIndex}
   selectedShuffledIndex: null,  // uncommitted selection
+  bookIdResults: [],    // {qIndex, selectedCode, correct}
+  bookIdPicked: false,  // whether book has been identified this question
 };
 
 // =============================================
@@ -1094,7 +1201,29 @@ function renderQuestion() {
 
   // Reset selection state
   state.selectedShuffledIndex = null;
+  state.bookIdPicked = false;
   document.getElementById('submit-btn').classList.add('hidden');
+
+  // Book ID Drill mode: show book selector, hide choices
+  const bookPanel = document.getElementById('book-id-panel');
+  if(state.mode === 'bookid') {
+    const q = state.questions[state.currentIndex];
+    bookPanel.classList.remove('hidden');
+    bookPanel.innerHTML = `
+      <div style="margin-bottom:10px;font-size:0.82rem;color:var(--gold);font-weight:700;">🎯 Which book has the answer?</div>
+      <div class="book-btn-grid">
+        <button class="book-btn bb-nec"  onclick="bookIdSelect('B')">📘 NEC 2026</button>
+        <button class="book-btn bb-osha" onclick="bookIdSelect('O')">🟠 OSHA 1926</button>
+        <button class="book-btn bb-e70"  onclick="bookIdSelect('P')">🔴 NFPA 70E</button>
+        <button class="book-btn bb-nasc" onclick="bookIdSelect('Y')">🟡 NASCLA Guide</button>
+        <button class="book-btn bb-theory" onclick="bookIdSelect('G')">🟢 Mike Holt Theory</button>
+        <button class="book-btn bb-ugly" onclick="bookIdSelect('U')">🟣 Ugly's Only</button>
+      </div>`;
+    document.getElementById('choices').classList.add('hidden');
+  } else {
+    bookPanel.classList.add('hidden');
+    document.getElementById('choices').classList.remove('hidden');
+  }
 
   // Flag button state
   const flagBtn = document.getElementById('flag-btn');
@@ -1107,6 +1236,31 @@ function renderQuestion() {
   state.lookupRunning = false;
   state.lookupSecs = 0;
   if(state.lookupTimer) { clearInterval(state.lookupTimer); state.lookupTimer=null; }
+}
+
+function bookIdSelect(selectedCode) {
+  if(state.bookIdPicked) return;
+  state.bookIdPicked = true;
+  const q = state.questions[state.currentIndex];
+  const ref = TABREFS[q.id];
+  const correct = ref && selectedCode === ref.bCode;
+  const correctBook = ref ? (BOOK_NAMES[ref.bCode] || ref.bCode) : '?';
+  const correctColor = ref ? (BOOK_COLORS[ref.bCode] || '#fff') : '#fff';
+
+  state.bookIdResults.push({qIndex: state.currentIndex, selectedCode, correct});
+
+  const panel = document.getElementById('book-id-panel');
+  panel.innerHTML = `
+    <div class="book-id-result" style="background:rgba(${correct?'46,204,113':'231,76,60'},0.1);border:1px solid var(--${correct?'green':'red'});">
+      ${correct ? '✅ Correct!' : '❌ Wrong —'} Primary book: <strong style="color:${correctColor}">${escHtml(correctBook)}</strong>
+      ${ref ? `<div style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.2);border-radius:6px;font-size:0.8rem;">
+        <span style="color:var(--gold)">📌 Tab route:</span> <strong>${escHtml(ref.bLabel)}</strong>
+        ${ref.uTab ? `<br><span style="color:#9b59b6">⚡ Ugly's shortcut available: <strong>${ref.uTab}</strong> (faster for table lookups)</span>` : ''}
+      </div>` : ''}
+    </div>`;
+
+  // Reveal choices
+  document.getElementById('choices').classList.remove('hidden');
 }
 
 function selectChoice(shuffledIndex, clickedBtn) {
@@ -1142,7 +1296,7 @@ function submitAnswer() {
     return;
   }
 
-  // Open book or Lookup — show feedback with Ugly's info
+  // Open book or Lookup — show feedback with Ugly's + Tab Route
   clickedBtn.classList.add(correct ? 'correct' : 'wrong');
   if(!correct) {
     const correctShuffledIdx = state.shuffledChoices.findIndex(c=>c.originalIndex===q.answerIndex);
@@ -1150,17 +1304,24 @@ function submitAnswer() {
   }
 
   const uglysData = UGLYS[q.id] || {covered:false, note:'Not mapped yet.'};
-  const uglysHtml = `<div style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:0.82rem;">
+  const uglysHtml = `<div style="margin-top:8px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:0.82rem;">
     <strong style="color:${uglysData.covered?'var(--green)':'var(--red)'}">Ugly's 2023:</strong> ${escHtml(uglysData.note)}
   </div>`;
+
+  const tabRef = TABREFS[q.id];
+  const tabHtml = tabRef ? `<div style="margin-top:8px;padding:8px 12px;background:rgba(0,0,0,0.25);border-radius:6px;font-size:0.82rem;border-left:3px solid ${BOOK_COLORS[tabRef.bCode]||'var(--gold)'}">
+    <strong style="color:${BOOK_COLORS[tabRef.bCode]||'var(--gold)'}">📌 Tab route:</strong> ${escHtml(tabRef.bLabel)}
+    ${tabRef.uTab ? `<span style="color:#9b59b6"> • Ugly's: <strong>${tabRef.uTab}</strong></span>` : ''}
+  </div>` : '';
 
   const fb = document.getElementById('feedback');
   fb.classList.remove('hidden');
   fb.className = 'feedback-box ' + (correct ? 'correct-fb' : 'wrong-fb');
   fb.innerHTML = `<div class="fb-verdict ${correct?'fb-correct':'fb-wrong'}">${correct ? '✓ Correct!' : '✗ Incorrect'}</div>
     <div class="fb-explanation">${escHtml(q.explanation)}</div>
-    <div class="fb-ref">📖 <strong>Primary Book:</strong> ${escHtml(q.bookRef)}</div>
+    <div class="fb-ref">📖 <strong>Book:</strong> ${escHtml(q.bookRef)}</div>
     <div class="fb-location">📍 ${escHtml(q.bookLocation)}</div>
+    ${tabHtml}
     ${uglysHtml}`;
 
   state.answers.push({qIndex: state.currentIndex, selectedOriginalIndex: choice.originalIndex, correct, lookupTime: null});
